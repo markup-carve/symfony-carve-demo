@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Twig Function &middot; symfony-carve{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <h2>Twig Function</h2>
+        <p class="lead">Render an inline Carve string with the <code>carve()</code> function:</p>
+        <pre><code>{{ '{{ carve(source) }}' }}</code></pre>
+        <p>Identical output to the filter; use whichever reads better at the call site.</p>
+    </div>
+
+    <div class="columns">
+        <div class="card">
+            <div class="label">Carve source</div>
+            <pre><code>{{ source }}</code></pre>
+        </div>
+        <div class="card">
+            <div class="label">Rendered</div>
+            <div class="rendered">{{ carve(source) }}</div>
+        </div>
+    </div>
+{% endblock %}

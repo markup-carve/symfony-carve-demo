@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Syntax &middot; symfony-carve{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <h2>Carve syntax gallery</h2>
+        <p class="lead">
+            A sampling of Carve constructs and how they render. Carve's inline markers differ from Markdown:
+            <code>/italic/</code> for italic, <code>*bold*</code> for bold, and <code>_underline_</code> for underline
+            (plus <code>=highlight=</code>, <code>~strikethrough~</code>, <code>^superscript^</code>).
+        </p>
+    </div>
+
+    {% for label, example in examples %}
+        <div class="columns">
+            <div class="card">
+                <div class="label">{{ label }} - source</div>
+                <pre><code>{{ example.source }}</code></pre>
+            </div>
+            <div class="card">
+                <div class="label">Rendered</div>
+                <div class="rendered">{{ example.html|raw }}</div>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

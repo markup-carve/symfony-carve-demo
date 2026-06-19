@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Safe Mode &middot; symfony-carve{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <h2>Safe mode</h2>
+        <p class="lead">
+            The bundle sanitizes raw HTML by default. The <code>raw_html</code> option controls how it is treated:
+            <code>strip</code> (default), <code>escape</code>, or <code>allow</code>. Setting <code>safe_mode: false</code>
+            disables sanitization entirely.
+        </p>
+        <div class="label">Untrusted source (contains XSS attempts)</div>
+        <pre><code>{{ source }}</code></pre>
+    </div>
+
+    <div class="columns">
+        <div class="card">
+            <div class="label">strip <span class="badge badge-safe">safe</span></div>
+            <pre><code>{{ strip }}</code></pre>
+            <div class="rendered">{{ strip|raw }}</div>
+        </div>
+        <div class="card">
+            <div class="label">escape <span class="badge badge-safe">safe</span></div>
+            <pre><code>{{ escape }}</code></pre>
+            <div class="rendered">{{ escape|raw }}</div>
+        </div>
+    </div>
+
+    <div class="columns">
+        <div class="card">
+            <div class="label">allow <span class="badge badge-unsafe">unsafe</span></div>
+            <p>Raw HTML passes through. Only use with fully trusted input.</p>
+            <pre><code>{{ allow }}</code></pre>
+        </div>
+        <div class="card">
+            <div class="label">safe_mode: false <span class="badge badge-unsafe">unsafe</span></div>
+            <p>No sanitization at all.</p>
+            <pre><code>{{ disabled }}</code></pre>
+        </div>
+    </div>
+{% endblock %}

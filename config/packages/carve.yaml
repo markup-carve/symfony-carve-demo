@@ -1,0 +1,5 @@
+# symfony-carve bundle configuration.
+# See https://github.com/markup-carve/symfony-carve for all options.
+carve:
+    safe_mode: true   # sanitize HTML (recommended for untrusted input)
+    raw_html: strip   # strip | escape | allow

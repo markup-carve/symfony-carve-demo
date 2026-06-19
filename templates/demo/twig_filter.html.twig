@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Twig Filter &middot; symfony-carve{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <h2>Twig Filter</h2>
+        <p class="lead">Pipe any Carve string through the <code>carve</code> filter:</p>
+        <pre><code>{{ '{{ source|carve }}' }}</code></pre>
+        <p>Output is marked safe, so Twig does not double-escape it (the renderer already sanitizes per the configured safe mode).</p>
+    </div>
+
+    <div class="columns">
+        <div class="card">
+            <div class="label">Carve source</div>
+            <pre><code>{{ source }}</code></pre>
+        </div>
+        <div class="card">
+            <div class="label">Rendered</div>
+            <div class="rendered">{{ source|carve }}</div>
+        </div>
+    </div>
+{% endblock %}

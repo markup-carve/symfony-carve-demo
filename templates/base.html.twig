@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}symfony-carve demo{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.1em%22 font-size=%2296%22>🪶</text></svg>">
+        <style>
+            * { box-sizing: border-box; }
+            body {
+                font-family: system-ui, -apple-system, sans-serif;
+                line-height: 1.6;
+                max-width: 1000px;
+                margin: 0 auto;
+                padding: 20px;
+                background: #f5f5f5;
+                color: #222;
+            }
+            nav {
+                background: #1f2933;
+                padding: 14px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+            }
+            nav a {
+                color: #fff;
+                text-decoration: none;
+                margin-right: 10px;
+                padding: 5px 10px;
+                border-radius: 4px;
+                font-size: 15px;
+            }
+            nav a:hover { background: #3e4c59; }
+            h1, h2, h3 { color: #1f2933; }
+            .lead { color: #52606d; }
+            .card {
+                background: #fff;
+                border-radius: 8px;
+                padding: 20px;
+                margin-bottom: 20px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            }
+            .card h2 { margin-top: 0; border-bottom: 2px solid #2563eb; padding-bottom: 10px; }
+            pre {
+                background: #2d2d2d;
+                color: #f8f8f2;
+                padding: 15px;
+                border-radius: 6px;
+                overflow-x: auto;
+                white-space: pre-wrap;
+                word-break: break-word;
+            }
+            code { font-family: 'SF Mono', Monaco, monospace; font-size: 14px; }
+            .rendered {
+                background: #fafafa;
+                border: 1px solid #ddd;
+                border-radius: 6px;
+                padding: 15px;
+            }
+            .rendered blockquote {
+                border-left: 4px solid #2563eb;
+                margin: 0;
+                padding-left: 15px;
+                color: #52606d;
+            }
+            .rendered table { border-collapse: collapse; }
+            .rendered th, .rendered td { border: 1px solid #ccc; padding: 6px 12px; }
+            .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+            @media (max-width: 768px) { .columns { grid-template-columns: 1fr; } }
+            form label { display: block; font-weight: bold; margin-top: 15px; }
+            form input[type="text"], form textarea {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                font-family: inherit;
+                font-size: 14px;
+            }
+            form textarea { resize: vertical; font-family: 'SF Mono', Monaco, monospace; }
+            form button {
+                margin-top: 15px;
+                background: #2563eb;
+                color: #fff;
+                border: none;
+                padding: 12px 24px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 16px;
+            }
+            form button:hover { background: #1d4ed8; }
+            .error { color: #c00; font-size: 14px; }
+            .warning { background: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 6px; }
+            .safe { background: #d4edda; border: 1px solid #28a745; padding: 15px; border-radius: 6px; }
+            .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+            .badge-safe { background: #28a745; color: #fff; }
+            .badge-unsafe { background: #dc3545; color: #fff; }
+            .label { font-weight: bold; color: #52606d; margin-bottom: 6px; }
+        </style>
+    </head>
+    <body>
+        <nav>
+            <a href="{{ path('home') }}">Home</a>
+            <a href="{{ path('twig_filter') }}">Twig Filter</a>
+            <a href="{{ path('twig_function') }}">Twig Function</a>
+            <a href="{{ path('service') }}">Service</a>
+            <a href="{{ path('form') }}">Live Editor</a>
+            <a href="{{ path('safe_mode') }}">Safe Mode</a>
+            <a href="{{ path('syntax') }}">Syntax</a>
+        </nav>
+        {% block body %}{% endblock %}
+    </body>
+</html>

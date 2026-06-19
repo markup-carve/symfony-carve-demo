@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    name: Boot and lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Validate composer.json
+        run: composer validate --strict --no-check-publish
+
+      - name: Lint the service container
+        run: php bin/console lint:container
+
+      - name: Lint Twig templates
+        run: php bin/console lint:twig templates
+
+      - name: Smoke-test every route
+        run: |
+          php -S 127.0.0.1:8000 -t public &
+          SERVER_PID=$!
+          sleep 2
+          set -e
+          for route in / /twig-filter /twig-function /service /form /safe-mode /syntax; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:8000$route")
+            echo "$route -> $code"
+            test "$code" = "200"
+          done
+          kill $SERVER_PID

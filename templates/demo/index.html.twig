@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}symfony-carve demo{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <h1>🪶 symfony-carve demo</h1>
+        <p class="lead">
+            A small Symfony app showing every feature of the
+            <a href="https://github.com/markup-carve/symfony-carve">symfony-carve</a> bundle, which renders
+            <a href="https://github.com/markup-carve/carve">Carve</a> markup to HTML through
+            <a href="https://github.com/markup-carve/carve-php">carve-php</a>.
+        </p>
+        <p>Carve is "Djot minus the footguns": a lightweight markup language with consistent, unambiguous syntax.</p>
+    </div>
+
+    <div class="card">
+        <h2>What this demo covers</h2>
+        <ul>
+            <li><a href="{{ path('twig_filter') }}">Twig Filter</a> - <code>{{ '{{ source|carve }}' }}</code></li>
+            <li><a href="{{ path('twig_function') }}">Twig Function</a> - <code>{{ '{{ carve(source) }}' }}</code></li>
+            <li><a href="{{ path('service') }}">Service</a> - inject <code>CarveRenderer</code> and call <code>render()</code></li>
+            <li><a href="{{ path('form') }}">Live Editor</a> - type Carve, submit, see rendered HTML</li>
+            <li><a href="{{ path('safe_mode') }}">Safe Mode</a> - raw-HTML strip / escape / allow, side by side</li>
+            <li><a href="{{ path('syntax') }}">Syntax</a> - a gallery of Carve constructs</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>Quick start</h2>
+        <pre><code>composer install
+php -S localhost:8000 -t public</code></pre>
+        <p>Then open <a href="http://localhost:8000">http://localhost:8000</a>.</p>
+    </div>
+{% endblock %}

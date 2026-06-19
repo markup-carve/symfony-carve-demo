@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Live Editor &middot; symfony-carve{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <h2>Live editor</h2>
+        <p class="lead">Type Carve markup, submit, and see it rendered. Input is sanitized by the configured safe mode.</p>
+
+        {{ form_start(form) }}
+            <div>
+                {{ form_label(form.title) }}
+                {{ form_widget(form.title) }}
+                <div class="error">{{ form_errors(form.title) }}</div>
+            </div>
+            <div>
+                {{ form_label(form.body) }}
+                {{ form_widget(form.body) }}
+                <div class="error">{{ form_errors(form.body) }}</div>
+            </div>
+            <div>
+                {{ form_label(form.comment) }}
+                {{ form_widget(form.comment) }}
+            </div>
+            {{ form_widget(form.render) }}
+        {{ form_end(form) }}
+    </div>
+
+    {% if preview %}
+        <div class="card">
+            <h2>Preview: {{ preview.title }}</h2>
+            <div class="rendered">{{ preview.body_html|raw }}</div>
+            {% if preview.comment_html %}
+                <h3>Comment</h3>
+                <div class="rendered">{{ preview.comment_html|raw }}</div>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock %}
