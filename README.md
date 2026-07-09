@@ -73,7 +73,7 @@ configured safe mode first.
 ### Service
 
 ```php
-use MarkupCarve\Symfony\CarveRenderer;
+use MarkupCarve\SymfonyCarve\CarveRenderer;
 
 public function show(CarveRenderer $carve): Response
 {
@@ -116,7 +116,7 @@ Block constructs (`# heading`, `- list`, `> quote`, fenced code, tables, `::: no
 
 ## How it is wired
 
-- `config/bundles.php` registers `MarkupCarve\Symfony\CarveBundle`.
+- `config/bundles.php` registers `MarkupCarve\SymfonyCarve\CarveBundle`.
 - `config/packages/carve.yaml` holds the bundle configuration.
 - `src/Controller/DemoController.php` autowires `CarveRenderer` and renders each page.
 - No database: the Live Editor uses a plain, non-persisted `Article` object.
