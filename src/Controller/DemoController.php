@@ -6,8 +6,8 @@ namespace App\Controller;
 
 use App\Entity\Article;
 use App\Form\ArticleType;
-use Carve\SafeMode;
-use Carve\Symfony\CarveRenderer;
+use MarkupCarve\Carve\SafeMode;
+use MarkupCarve\Symfony\CarveRenderer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
