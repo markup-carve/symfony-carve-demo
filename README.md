@@ -109,7 +109,7 @@ Carve's inline markers differ from Markdown - this is the most common surprise:
 | `_underline_`     | underline            | `<u>`       |
 | `=highlight=`     | highlighted          | `<mark>`    |
 | `~strikethrough~` | struck through       | `<s>`       |
-| `^superscript^`   | superscript          | `<sup>`     |
+| `{^superscript^}` | superscript          | `<sup>`     |
 
 Block constructs (`# heading`, `- list`, `> quote`, fenced code, tables, `::: note` admonitions) follow the
 [Carve specification](https://github.com/markup-carve/carve). The Syntax page renders a live example of each.
