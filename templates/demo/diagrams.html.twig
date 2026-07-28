@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Diagrams &middot; symfony-carve{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <h2>Diagram fences</h2>
+        <p class="lead">
+            The <code>diagrams</code> config option (added in symfony-carve 0.1.2) turns selected
+            fenced blocks into hydration elements for a client-side renderer, instead of plain code
+            blocks. Enable the presets you want in <code>config/packages/carve.yaml</code>:
+        </p>
+        <pre><code>carve:
+    safe_mode: true
+    raw_html: strip
+    diagrams: ['mermaid', 'plantuml', 'graphviz', 'd2']</code></pre>
+        <p>
+            The injected <code>CarveRenderer</code> service on this page uses exactly that config, so
+            a <code>``` mermaid</code> fence becomes <code>&lt;pre class="mermaid"&gt;...&lt;/pre&gt;</code>.
+            The bundle only emits the markup - you supply the browser library that draws it.
+        </p>
+    </div>
+
+    <div class="card">
+        <div class="label">Before / after (same Mermaid fence)</div>
+        <div class="columns">
+            <div>
+                <div class="label">diagrams: [] (default) - plain code block</div>
+                <pre><code>{{ disabled_html }}</code></pre>
+            </div>
+            <div>
+                <div class="label">diagrams: ['mermaid'] - hydration element</div>
+                <pre><code>{{ examples['Mermaid'].html }}</code></pre>
+            </div>
+        </div>
+    </div>
+
+    {% for label, example in examples %}
+        <div class="card">
+            <h2>{{ label }}</h2>
+            <p class="lead">{{ example.note }}</p>
+            <div class="columns">
+                <div>
+                    <div class="label">Carve source</div>
+                    <pre><code>{{ example.source }}</code></pre>
+                </div>
+                <div>
+                    <div class="label">Emitted HTML</div>
+                    <pre><code>{{ example.html }}</code></pre>
+                </div>
+            </div>
+            {% if label == 'Mermaid' %}
+                <div class="label" style="margin-top:15px;">Rendered live by mermaid.js</div>
+                <div class="rendered">{{ example.html|raw }}</div>
+            {% endif %}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <h2>Client-side renderers</h2>
+        <p>Each preset needs its own browser library on the page. The bundle stays renderer-agnostic:</p>
+        <ul>
+            <li><strong>Graphviz, D2</strong> render fully offline via the WebAssembly helpers in
+                <code>&#64;markup-carve/carve-grammars</code> (no server, no external call).</li>
+            <li><strong>Mermaid, WaveDrom, Vega-Lite, Chart.js, ABC</strong> each need their own library
+                (mermaid.js, wavedrom, vega-embed, chart.js, abcjs). This page loads mermaid.js from a CDN.</li>
+            <li><strong>PlantUML</strong> has no practical in-browser renderer; draw it through a
+                <a href="https://kroki.io">Kroki</a> server (the public one sends your source off-domain -
+                self-host for sensitive content).</li>
+        </ul>
+    </div>
+
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: false });
+        mermaid.run({ querySelector: '.rendered .mermaid' });
+    </script>
+{% endblock %}

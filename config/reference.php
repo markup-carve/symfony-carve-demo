@@ -726,6 +726,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  * @psalm-type CarveConfig = array{
  *     safe_mode?: bool|Param, // Enable HTML sanitization (recommended for untrusted input). // Default: true
  *     raw_html?: "strip"|"escape"|"allow"|Param, // How raw HTML is treated when safe_mode is on. // Default: "strip"
+ *     diagrams?: list<"mermaid"|"plantuml"|"d2"|"graphviz"|"wavedrom"|"vega_lite"|"chart"|"abc"|Param>,
  * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,

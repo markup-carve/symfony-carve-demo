@@ -3,3 +3,9 @@
 carve:
     safe_mode: true   # sanitize HTML (recommended for untrusted input)
     raw_html: strip   # strip | escape | allow
+
+    # Diagram fenced-block presets to enable. A matching fence (e.g. ``` mermaid)
+    # then renders as a hydration element (<pre class="mermaid">...) for a
+    # client-side renderer to pick up, instead of a plain code block.
+    # See the "Diagrams" demo page. Each preset needs its own browser library.
+    diagrams: ['mermaid', 'plantuml', 'graphviz', 'd2']

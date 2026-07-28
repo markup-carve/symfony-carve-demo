@@ -46,6 +46,7 @@ Then open <http://localhost:8000>.
 | Live Editor | `/form` | Type Carve in a form, submit, and see the rendered preview |
 | Safe Mode | `/safe-mode` | Raw-HTML `strip` / `escape` / `allow` and disabled, side by side, against an XSS payload |
 | Syntax | `/syntax` | A gallery of Carve constructs and their HTML output |
+| Diagrams | `/diagrams` | The `diagrams` config option turning fences into diagram hydration elements (with a live Mermaid render) |
 
 ## Screenshots
 
@@ -89,14 +90,34 @@ The bundle is configured in `config/packages/carve.yaml`:
 carve:
     safe_mode: true   # sanitize HTML (default)
     raw_html: strip   # strip | escape | allow
+    diagrams: ['mermaid', 'plantuml', 'graphviz', 'd2']   # diagram fence presets (default: [])
 ```
 
-| Key         | Type | Default | Description                                                                 |
-|-------------|------|---------|-----------------------------------------------------------------------------|
-| `safe_mode` | bool | `true`  | Enable HTML sanitization. Keep on for untrusted input.                      |
-| `raw_html`  | enum | `strip` | How raw HTML is handled when `safe_mode` is on: `strip`, `escape`, `allow`. |
+| Key         | Type     | Default | Description                                                                 |
+|-------------|----------|---------|-----------------------------------------------------------------------------|
+| `safe_mode` | bool     | `true`  | Enable HTML sanitization. Keep on for untrusted input.                      |
+| `raw_html`  | enum     | `strip` | How raw HTML is handled when `safe_mode` is on: `strip`, `escape`, `allow`. |
+| `diagrams`  | string[] | `[]`    | Diagram fenced-block presets to enable (`mermaid`, `plantuml`, `graphviz`, `d2`, `wavedrom`, `vega_lite`, `chart`, `abc`). Off by default. |
 
 The Safe Mode page renders the same untrusted input under each setting so you can see the difference directly.
+
+### Diagrams
+
+With a preset listed under `diagrams`, a matching fence renders as a hydration element for a
+client-side renderer instead of a plain code block - for example a ` ``` mermaid ` block becomes
+`<pre class="mermaid">...</pre>`. The bundle only emits the markup; it never draws the diagram or
+ships a renderer, so each preset needs its own browser library on the page:
+
+- **Graphviz** and **D2** render fully offline via the WebAssembly helpers in
+  `markup-carve/carve-grammars` (no server, no external call).
+- **Mermaid**, **WaveDrom**, **Vega-Lite**, **Chart.js**, and **ABC** each need their own library
+  (mermaid.js, wavedrom, vega-embed, chart.js, abcjs). The Diagrams page loads mermaid.js from a
+  CDN, so drawing the live Mermaid example needs network access to that CDN in the browser.
+- **PlantUML** has no practical in-browser renderer; draw it through a [Kroki](https://kroki.io)
+  server. The public server sends your source off-domain, so self-host it for sensitive content.
+
+The Diagrams page shows the same fence with the option off (plain code block) and on (hydration
+element) side by side, plus Mermaid, PlantUML, and Graphviz examples.
 
 ## Carve syntax cheat sheet
 
