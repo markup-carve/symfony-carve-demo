@@ -50,6 +50,10 @@ Then open <http://localhost:8000>.
 
 ## Screenshots
 
+**Live Diagram Gallery** - all eight fenced-render presets drawn in the browser (mermaid, plantuml, graphviz, d2, vega-lite, wavedrom, chart, abc):
+
+![Live Diagram Gallery](docs/screenshots/diagram-gallery.png)
+
 | Live editor | Safe mode |
 |---|---|
 | ![Live editor form](docs/screenshots/form.png) | ![Safe-mode comparison](docs/screenshots/safe-mode.png) |
