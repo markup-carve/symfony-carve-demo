@@ -7,8 +7,6 @@ A small, runnable Symfony application that showcases every feature of the
 
 Carve is "Djot minus the footguns": a lightweight markup language with consistent, unambiguous syntax.
 
-![Twig filter: Carve source and rendered HTML side by side](docs/screenshots/twig-filter.png)
-
 > [!NOTE]
 > Neither carve-php nor symfony-carve is tagged on Packagist yet. Until they are, this demo pulls both as
 > `dev-main` straight from GitHub. The required VCS repositories are already declared in `composer.json`, so a
@@ -50,17 +48,8 @@ Then open <http://localhost:8000>.
 
 ## Screenshots
 
-**Live Diagram Gallery** - all eight fenced-render presets drawn in the browser (mermaid, plantuml, graphviz, d2, vega-lite, wavedrom, chart, abc):
+See the **[screenshot gallery](docs/screenshots/)** for a visual tour - the live diagram gallery (all eight fenced-render presets drawn live), the Twig filter, the live editor, safe mode, the syntax gallery, and the home page.
 
-![Live Diagram Gallery](docs/screenshots/diagram-gallery.png)
-
-| Live editor | Safe mode |
-|---|---|
-| ![Live editor form](docs/screenshots/form.png) | ![Safe-mode comparison](docs/screenshots/safe-mode.png) |
-
-| Syntax gallery | Home |
-|---|---|
-| ![Syntax gallery](docs/screenshots/syntax.png) | ![Home page](docs/screenshots/home.png) |
 
 ### Twig
 
