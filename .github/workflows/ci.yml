@@ -36,7 +36,7 @@ jobs:
           SERVER_PID=$!
           sleep 2
           set -e
-          for route in / /twig-filter /twig-function /service /form /safe-mode /syntax; do
+          for route in / /twig-filter /twig-function /service /form /safe-mode /syntax /diagrams; do
             code=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:8000$route")
             echo "$route -> $code"
             test "$code" = "200"

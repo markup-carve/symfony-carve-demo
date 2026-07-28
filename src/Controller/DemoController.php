@@ -118,6 +118,51 @@ class DemoController extends AbstractController
         ]);
     }
 
+    #[Route('/diagrams', name: 'diagrams')]
+    public function diagrams(CarveRenderer $carve): Response
+    {
+        // The injected CarveRenderer is configured from config/packages/carve.yaml,
+        // where `diagrams: ['mermaid', 'plantuml', 'graphviz', 'd2']` is enabled.
+        // With a preset enabled, a matching fence renders as a hydration element
+        // (e.g. <pre class="mermaid">...) instead of a plain code block.
+        $examples = [
+            'Mermaid' => [
+                'fence' => 'mermaid',
+                'note' => 'Rendered live below by mermaid.js (loaded from a CDN, fully client-side).',
+                'source' => "``` mermaid\nflowchart LR\n    A[Write Carve] --> B{diagrams enabled?}\n    B -->|yes| C[hydration element]\n    B -->|no| D[plain code block]\n```",
+            ],
+            'PlantUML' => [
+                'fence' => 'plantuml',
+                'note' => 'Needs a Kroki server (or self-hosted) to draw; the bundle only emits the markup.',
+                'source' => "``` plantuml\n@startuml\nAlice -> Bob: config option\nBob --> Alice: hydration markup\n@enduml\n```",
+            ],
+            'Graphviz' => [
+                'fence' => 'dot',
+                'note' => 'Renders fully offline in the browser via the carve-grammars WebAssembly helper.',
+                'source' => "``` dot\ndigraph {\n    Carve -> HTML -> Diagram\n}\n```",
+            ],
+        ];
+
+        $rendered = [];
+        foreach ($examples as $label => $example) {
+            $rendered[$label] = [
+                'fence' => $example['fence'],
+                'note' => $example['note'],
+                'source' => $example['source'],
+                'html' => $carve->render($example['source']),
+            ];
+        }
+
+        // Contrast: the same mermaid fence with diagrams turned off stays a plain,
+        // escaped code block - the "before" side of the feature.
+        $plainConverter = new CarveRenderer(true, SafeMode::RAW_HTML_STRIP, []);
+
+        return $this->render('demo/diagrams.html.twig', [
+            'examples' => $rendered,
+            'disabled_html' => $plainConverter->render($examples['Mermaid']['source']),
+        ]);
+    }
+
     #[Route('/syntax', name: 'syntax')]
     public function syntax(CarveRenderer $carve): Response
     {
