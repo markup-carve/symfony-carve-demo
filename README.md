@@ -8,9 +8,8 @@ A small, runnable Symfony application that showcases every feature of the
 Carve is "Djot minus the footguns": a lightweight markup language with consistent, unambiguous syntax.
 
 > [!NOTE]
-> Neither carve-php nor symfony-carve is tagged on Packagist yet. Until they are, this demo pulls both as
-> `dev-main` straight from GitHub. The required VCS repositories are already declared in `composer.json`, so a
-> plain `composer install` just works.
+> This demo tracks the released packages from Packagist: `markup-carve/symfony-carve` `^0.1.2` (which pulls
+> `markup-carve/carve-php` `0.1.3`). A plain `composer install` just works.
 
 ## Requirements
 
