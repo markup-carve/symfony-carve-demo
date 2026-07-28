@@ -8,8 +8,33 @@
         <p class="lead">
             A sampling of Carve constructs and how they render. Carve's inline markers differ from Markdown:
             <code>/italic/</code> for italic, <code>*bold*</code> for bold, and <code>_underline_</code> for underline
-            (plus <code>=highlight=</code>, <code>~strikethrough~</code>, <code>{^superscript^}</code>).
+            (plus <code>=highlight=</code>, <code>~strikethrough~</code>, and braced <code>{^superscript^}</code> /
+            <code>{,subscript,}</code>).
         </p>
+        <p>
+            The gallery also covers Carve's newer and more deliberate behaviors: the inline literal
+            <code>!`...`</code>, definition lists, footnotes, smart typography (dash runs, ellipsis, quotes),
+            tight versus loose lists, and the strict column-0 rule for block markers.
+        </p>
+    </div>
+
+    <div class="card">
+        <h2>Inline literal <code>!`...`</code></h2>
+        <p class="lead">
+            Prefixing a code span with <code>!</code> makes it an <em>inline literal</em>: the characters
+            appear verbatim, with no code styling and no further markup processing. Handy for showing markup
+            characters without them being interpreted.
+        </p>
+        <div class="columns">
+            <div>
+                <div class="label">Source</div>
+                <pre><code>{{ inline_literal.source }}</code></pre>
+            </div>
+            <div>
+                <div class="label">Rendered</div>
+                <div class="rendered">{{ inline_literal.html|raw }}</div>
+            </div>
+        </div>
     </div>
 
     {% for label, example in examples %}

@@ -8,4 +8,8 @@ carve:
     # then renders as a hydration element (<pre class="mermaid">...) for a
     # client-side renderer to pick up, instead of a plain code block.
     # See the "Diagrams" demo page. Each preset needs its own browser library.
-    diagrams: ['mermaid', 'plantuml', 'graphviz', 'd2']
+    #
+    # All eight presets the bundle supports are enabled here so the demo gallery
+    # can draw every one live. Note the enum spelling `vega_lite` (underscore);
+    # the fence word authors type is `vega-lite` (hyphen).
+    diagrams: ['mermaid', 'plantuml', 'graphviz', 'd2', 'vega_lite', 'wavedrom', 'chart', 'abc']

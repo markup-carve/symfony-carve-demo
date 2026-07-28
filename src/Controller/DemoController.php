@@ -122,31 +122,67 @@ class DemoController extends AbstractController
     public function diagrams(CarveRenderer $carve): Response
     {
         // The injected CarveRenderer is configured from config/packages/carve.yaml,
-        // where `diagrams: ['mermaid', 'plantuml', 'graphviz', 'd2']` is enabled.
-        // With a preset enabled, a matching fence renders as a hydration element
-        // (e.g. <pre class="mermaid">...) instead of a plain code block.
+        // where all eight presets are enabled. With a preset enabled, a matching
+        // fence renders as a hydration element (e.g. <pre class="mermaid">...)
+        // instead of a plain code block. Each example below carries a fence CSS
+        // class, a note on how it draws, and valid source so the client-side
+        // library on the page can actually render it.
         $examples = [
             'Mermaid' => [
-                'fence' => 'mermaid',
-                'note' => 'Rendered live below by mermaid.js (loaded from a CDN, fully client-side).',
+                'class' => 'mermaid',
+                'renderer' => 'mermaid.js (CDN, client-side)',
+                'note' => 'Rendered live by mermaid.js. The library loads from a CDN and draws entirely in the browser.',
                 'source' => "``` mermaid\nflowchart LR\n    A[Write Carve] --> B{diagrams enabled?}\n    B -->|yes| C[hydration element]\n    B -->|no| D[plain code block]\n```",
             ],
+            'Graphviz' => [
+                'class' => 'graphviz',
+                'renderer' => '@viz-js/viz WebAssembly (CDN, offline after load)',
+                'note' => 'The dot source is rendered to SVG fully in-browser by the @viz-js/viz WebAssembly build. No server call.',
+                'source' => "``` dot\ndigraph {\n    rankdir=LR;\n    Carve -> HTML -> Diagram;\n}\n```",
+            ],
+            'D2' => [
+                'class' => 'd2',
+                'renderer' => 'Kroki server (public kroki.io, needs network)',
+                'note' => 'D2 has no small in-browser build, so the source is deflate-encoded and drawn through the public Kroki server. If the network is blocked the source stays visible.',
+                'source' => "``` d2\nCarve -> HTML: convert\nHTML -> Diagram: hydrate\n```",
+            ],
             'PlantUML' => [
-                'fence' => 'plantuml',
-                'note' => 'Needs a Kroki server (or self-hosted) to draw; the bundle only emits the markup.',
+                'class' => 'plantuml',
+                'renderer' => 'plantuml.com server (~h hex encoding, needs network)',
+                'note' => 'The source is hex-encoded and drawn by the public PlantUML server via its ~h scheme. If the network is blocked the source stays visible.',
                 'source' => "``` plantuml\n@startuml\nAlice -> Bob: config option\nBob --> Alice: hydration markup\n@enduml\n```",
             ],
-            'Graphviz' => [
-                'fence' => 'dot',
-                'note' => 'Renders fully offline in the browser via the carve-grammars WebAssembly helper.',
-                'source' => "``` dot\ndigraph {\n    Carve -> HTML -> Diagram\n}\n```",
+            'Vega-Lite' => [
+                'class' => 'vega-lite',
+                'renderer' => 'vega + vega-lite + vega-embed (CDN, client-side)',
+                'note' => 'A Vega-Lite JSON spec rides in a <script type="application/json"> and is drawn by vega-embed. Note the fence word is vega-lite (hyphen); the config enum spells it vega_lite.',
+                'source' => "``` vega-lite\n{\n  \"\$schema\": \"https://vega.github.io/schema/vega-lite/v5.json\",\n  \"data\": {\"values\": [\n    {\"engine\": \"PHP\", \"tier\": 3},\n    {\"engine\": \"JS\", \"tier\": 3},\n    {\"engine\": \"Rust\", \"tier\": 3}\n  ]},\n  \"mark\": \"bar\",\n  \"encoding\": {\n    \"x\": {\"field\": \"engine\", \"type\": \"nominal\"},\n    \"y\": {\"field\": \"tier\", \"type\": \"quantitative\"}\n  }\n}\n```",
+            ],
+            'WaveDrom' => [
+                'class' => 'wavedrom',
+                'renderer' => 'wavedrom + default skin (CDN, client-side)',
+                'note' => 'A WaveDrom JSON timing spec, drawn to SVG by the wavedrom library.',
+                'source' => "``` wavedrom\n{ \"signal\": [\n  { \"name\": \"clk\",  \"wave\": \"p......\" },\n  { \"name\": \"data\", \"wave\": \"x.34.5x\", \"data\": [\"a\", \"b\", \"c\"] }\n]}\n```",
+            ],
+            'Chart.js' => [
+                'class' => 'chart',
+                'renderer' => 'chart.js (CDN, client-side)',
+                'note' => 'A Chart.js JSON config in a <script type="application/json">, drawn onto a <canvas> by chart.js.',
+                'source' => "``` chart\n{\n  \"type\": \"bar\",\n  \"data\": {\n    \"labels\": [\"PHP\", \"JS\", \"Rust\"],\n    \"datasets\": [{ \"label\": \"Carve engines\", \"data\": [3, 3, 3] }]\n  },\n  \"options\": { \"responsive\": true }\n}\n```",
+            ],
+            'ABC' => [
+                'class' => 'abc',
+                'renderer' => 'abcjs (CDN, client-side)',
+                'note' => 'ABC music notation rendered to a score (SVG) by abcjs.',
+                'source' => "``` abc\nX:1\nT:Carve Scale\nM:4/4\nL:1/4\nK:C\nC D E F | G A B c |\n```",
             ],
         ];
 
         $rendered = [];
         foreach ($examples as $label => $example) {
             $rendered[$label] = [
-                'fence' => $example['fence'],
+                'class' => $example['class'],
+                'renderer' => $example['renderer'],
                 'note' => $example['note'],
                 'source' => $example['source'],
                 'html' => $carve->render($example['source']),
@@ -166,15 +202,23 @@ class DemoController extends AbstractController
     #[Route('/syntax', name: 'syntax')]
     public function syntax(CarveRenderer $carve): Response
     {
+        // Core constructs plus the newer / convergence features Carve is known
+        // for. Each renders live through the same CarveRenderer service.
         $examples = [
             'Headings' => "# Heading 1\n## Heading 2\n### Heading 3",
             'Emphasis' => "/italic/\n\n*bold*\n\n_underline_\n\n=highlight=\n\n~strikethrough~",
+            'Superscript & subscript' => "Braced only: E = mc{^2^} and H{,2,}O.",
             'Lists' => "- one\n- two\n  - nested\n\n1. first\n2. second",
             'Task list' => "- [x] done\n- [ ] todo",
+            'Tight vs loose lists' => "Tight (no blank lines):\n\n- one\n- two\n\nLoose (blank lines between items wrap each in a paragraph):\n\n- one\n\n- two",
+            'Definition list' => ":: Carve\n:  A post-Markdown markup language.\n\n:: Djot\n:  The project Carve refines.",
             'Blockquote' => "> A quote\n> spanning lines.",
             'Link & image' => "[Carve spec](https://github.com/markup-carve/carve)",
             'Table' => "| Lang | Status |\n|------|--------|\n| PHP  | ready  |\n| JS   | ready  |",
             'Admonition' => "::: note\nThis is a note admonition.\n:::",
+            'Footnotes' => "Carve supports real footnotes.[^spec]\n\n[^spec]: Defined once, linked and back-linked automatically.",
+            'Smart typography' => "Ranges use -- an en dash -- and asides use --- an em dash. Ellipsis... and \"smart quotes\" and 'single' too.",
+            'Strict column-0 markers' => "A paragraph.\n\n   # Indented three spaces, so this stays literal text, not a heading.\n\n# A real, column-0 heading",
         ];
 
         $rendered = [];
@@ -182,8 +226,18 @@ class DemoController extends AbstractController
             $rendered[$label] = ['source' => $src, 'html' => $carve->render($src)];
         }
 
+        // Inline literal is a distinct, newer inline construct worth its own
+        // side-by-side contrast with a normal code span.
+        $inlineLiteral = [
+            'source' => "A code span styles its content: `*not bold*`.\n\nAn inline literal shows the characters verbatim, with no code styling and no markup: !`*not bold*`.",
+            'html' => $carve->render(
+                "A code span styles its content: `*not bold*`.\n\nAn inline literal shows the characters verbatim, with no code styling and no markup: !`*not bold*`.",
+            ),
+        ];
+
         return $this->render('demo/syntax.html.twig', [
             'examples' => $rendered,
+            'inline_literal' => $inlineLiteral,
         ]);
     }
 }

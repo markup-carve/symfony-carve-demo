@@ -8,16 +8,22 @@
         <p class="lead">
             The <code>diagrams</code> config option (added in symfony-carve 0.1.2) turns selected
             fenced blocks into hydration elements for a client-side renderer, instead of plain code
-            blocks. Enable the presets you want in <code>config/packages/carve.yaml</code>:
+            blocks. All eight built-in presets are enabled in <code>config/packages/carve.yaml</code>:
         </p>
         <pre><code>carve:
     safe_mode: true
     raw_html: strip
-    diagrams: ['mermaid', 'plantuml', 'graphviz', 'd2']</code></pre>
+    diagrams: ['mermaid', 'plantuml', 'graphviz', 'd2', 'vega_lite', 'wavedrom', 'chart', 'abc']</code></pre>
         <p>
             The injected <code>CarveRenderer</code> service on this page uses exactly that config, so
-            a <code>``` mermaid</code> fence becomes <code>&lt;pre class="mermaid"&gt;...&lt;/pre&gt;</code>.
-            The bundle only emits the markup - you supply the browser library that draws it.
+            a <code>``` mermaid</code> fence becomes <code>&lt;pre class="mermaid"&gt;...&lt;/pre&gt;</code>,
+            a <code>``` vega-lite</code> fence becomes <code>&lt;div class="vega-lite"&gt;&lt;script type="application/json"&gt;...</code>,
+            and so on. The bundle only emits the markup - you supply the browser library that draws it.
+            Every card below shows the Carve source, the emitted markup, and the live drawn result.
+        </p>
+        <p class="lead">
+            <strong>Note on spelling:</strong> the config enum value is <code>vega_lite</code> (underscore),
+            while the fence word authors type is <code>vega-lite</code> (hyphen).
         </p>
     </div>
 
@@ -39,40 +45,197 @@
         <div class="card">
             <h2>{{ label }}</h2>
             <p class="lead">{{ example.note }}</p>
+            <p class="label">Renderer: {{ example.renderer }}</p>
             <div class="columns">
                 <div>
                     <div class="label">Carve source</div>
                     <pre><code>{{ example.source }}</code></pre>
                 </div>
                 <div>
-                    <div class="label">Emitted HTML</div>
+                    <div class="label">Emitted markup</div>
                     <pre><code>{{ example.html }}</code></pre>
                 </div>
             </div>
-            {% if label == 'Mermaid' %}
-                <div class="label" style="margin-top:15px;">Rendered live by mermaid.js</div>
-                <div class="rendered">{{ example.html|raw }}</div>
-            {% endif %}
+            <div class="label" style="margin-top:15px;">Live render</div>
+            <div class="rendered live-render">{{ example.html|raw }}</div>
         </div>
     {% endfor %}
 
     <div class="card">
         <h2>Client-side renderers</h2>
-        <p>Each preset needs its own browser library on the page. The bundle stays renderer-agnostic:</p>
+        <p>Each preset needs its own browser library on the page. The bundle stays renderer-agnostic; this page wires one renderer per type from public CDNs:</p>
         <ul>
-            <li><strong>Graphviz, D2</strong> render fully offline via the WebAssembly helpers in
-                <code>&#64;markup-carve/carve-grammars</code> (no server, no external call).</li>
-            <li><strong>Mermaid, WaveDrom, Vega-Lite, Chart.js, ABC</strong> each need their own library
-                (mermaid.js, wavedrom, vega-embed, chart.js, abcjs). This page loads mermaid.js from a CDN.</li>
-            <li><strong>PlantUML</strong> has no practical in-browser renderer; draw it through a
-                <a href="https://kroki.io">Kroki</a> server (the public one sends your source off-domain -
-                self-host for sensitive content).</li>
+            <li><strong>Mermaid</strong> - mermaid.js (client-side).</li>
+            <li><strong>Graphviz</strong> - the <code>&#64;viz-js/viz</code> WebAssembly build (renders offline once loaded).</li>
+            <li><strong>Vega-Lite</strong> - vega + vega-lite + vega-embed.</li>
+            <li><strong>WaveDrom</strong> - wavedrom + its default skin.</li>
+            <li><strong>Chart.js</strong> - chart.js onto a <code>&lt;canvas&gt;</code>.</li>
+            <li><strong>ABC</strong> - abcjs.</li>
+            <li><strong>D2</strong> - no small in-browser build, so it is drawn through a
+                <a href="https://kroki.io">Kroki</a> server (needs network; the public one sends your
+                source off-domain - self-host for sensitive content).</li>
+            <li><strong>PlantUML</strong> - drawn through the public
+                <a href="https://www.plantuml.com/plantuml">PlantUML server</a> via its <code>~h</code>
+                hex scheme (needs network).</li>
         </ul>
+        <p>Every renderer degrades gracefully: if a library or server is unreachable, the diagram
+            source stays visible as text rather than vanishing.</p>
     </div>
 
-    <script type="module">
-        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-        mermaid.initialize({ startOnLoad: false });
-        mermaid.run({ querySelector: '.rendered .mermaid' });
+    <!-- Client-side diagram libraries (UMD builds, loaded from public CDNs). -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@viz-js/viz@3/lib/viz-standalone.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/abcjs@6/dist/abcjs-basic-min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/wavedrom@3/skins/default.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/wavedrom@3/wavedrom.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pako@2/dist/pako.min.js"></script>
+
+    <script>
+        // Each renderer is independently guarded: a failure in one type (missing
+        // library, bad network) never blocks the others, and always leaves the
+        // diagram source visible as text (graceful degradation).
+        document.addEventListener('DOMContentLoaded', function () {
+            var scope = '.live-render ';
+
+            // Mermaid: upgrades <pre class="mermaid"> in place.
+            try {
+                if (window.mermaid) {
+                    mermaid.initialize({ startOnLoad: false });
+                    mermaid.run({ querySelector: scope + '.mermaid' });
+                }
+            } catch (e) { console.error('mermaid', e); }
+
+            // Graphviz: dot source -> SVG via the viz.js WebAssembly build.
+            try {
+                if (window.Viz && typeof Viz.instance === 'function') {
+                    Viz.instance().then(function (viz) {
+                        document.querySelectorAll(scope + '.graphviz').forEach(function (pre) {
+                            try {
+                                var svg = viz.renderSVGElement(pre.textContent);
+                                svg.style.maxWidth = '100%';
+                                pre.replaceWith(svg);
+                            } catch (e) { console.error('graphviz render', e); }
+                        });
+                    }).catch(function (e) { console.error('viz instance', e); });
+                }
+            } catch (e) { console.error('graphviz', e); }
+
+            // Vega-Lite: JSON spec in a <script type="application/json"> -> vega-embed.
+            try {
+                if (window.vegaEmbed) {
+                    document.querySelectorAll(scope + '.vega-lite').forEach(function (div) {
+                        try {
+                            var script = div.querySelector('script[type="application/json"]');
+                            if (!script) { return; }
+                            var spec = JSON.parse(script.textContent);
+                            var target = document.createElement('div');
+                            div.appendChild(target);
+                            window.vegaEmbed(target, spec, { actions: false }).then(function () {
+                                script.remove();
+                            }).catch(function (e) { console.error('vega render', e); });
+                        } catch (e) { console.error('vega parse', e); }
+                    });
+                }
+            } catch (e) { console.error('vega-lite', e); }
+
+            // WaveDrom: JSON spec -> <script type="WaveDrom"> then ProcessAll().
+            try {
+                if (window.WaveDrom) {
+                    var found = false;
+                    document.querySelectorAll(scope + '.wavedrom').forEach(function (pre) {
+                        try {
+                            JSON.parse(pre.textContent); // validate before swapping
+                            var s = document.createElement('script');
+                            s.type = 'WaveDrom';
+                            s.textContent = pre.textContent;
+                            pre.replaceWith(s);
+                            found = true;
+                        } catch (e) { console.error('wavedrom parse', e); }
+                    });
+                    if (found && typeof WaveDrom.ProcessAll === 'function') {
+                        WaveDrom.ProcessAll();
+                    }
+                }
+            } catch (e) { console.error('wavedrom', e); }
+
+            // Chart.js: JSON config -> new Chart() on a fresh <canvas>.
+            try {
+                if (window.Chart) {
+                    document.querySelectorAll(scope + '.chart').forEach(function (div) {
+                        try {
+                            var script = div.querySelector('script[type="application/json"]');
+                            if (!script) { return; }
+                            var cfg = JSON.parse(script.textContent);
+                            var canvas = document.createElement('canvas');
+                            div.appendChild(canvas);
+                            new Chart(canvas, cfg);
+                            script.remove();
+                        } catch (e) { console.error('chart render', e); }
+                    });
+                }
+            } catch (e) { console.error('chart', e); }
+
+            // ABC: notation text -> score via abcjs.
+            try {
+                if (window.ABCJS) {
+                    document.querySelectorAll(scope + '.abc').forEach(function (pre) {
+                        try {
+                            var src = pre.textContent;
+                            var target = document.createElement('div');
+                            pre.replaceWith(target);
+                            ABCJS.renderAbc(target, src);
+                        } catch (e) { console.error('abc render', e); }
+                    });
+                }
+            } catch (e) { console.error('abc', e); }
+
+            // PlantUML: hex-encode and draw through the public PlantUML server.
+            // The <img> is inserted next to the source; the source is hidden only
+            // once the image actually loads, so a blocked network leaves it visible.
+            try {
+                document.querySelectorAll(scope + '.plantuml').forEach(function (pre) {
+                    try {
+                        var bytes = new TextEncoder().encode(pre.textContent);
+                        var hex = Array.prototype.map.call(bytes, function (b) {
+                            return b.toString(16).padStart(2, '0');
+                        }).join('');
+                        var img = document.createElement('img');
+                        img.alt = 'PlantUML diagram';
+                        img.style.maxWidth = '100%';
+                        img.style.background = '#fff';
+                        img.onload = function () { pre.style.display = 'none'; };
+                        img.onerror = function () { img.remove(); };
+                        pre.parentNode.insertBefore(img, pre);
+                        img.src = 'https://www.plantuml.com/plantuml/svg/~h' + hex;
+                    } catch (e) { console.error('plantuml', e); }
+                });
+            } catch (e) { console.error('plantuml', e); }
+
+            // D2: deflate-encode and draw through a public Kroki server.
+            try {
+                if (window.pako) {
+                    document.querySelectorAll(scope + '.d2').forEach(function (pre) {
+                        try {
+                            var data = new TextEncoder().encode(pre.textContent);
+                            var deflated = pako.deflate(data, { level: 9 });
+                            var b64 = btoa(String.fromCharCode.apply(null, deflated))
+                                .replace(/\+/g, '-').replace(/\//g, '_');
+                            var img = document.createElement('img');
+                            img.alt = 'D2 diagram';
+                            img.style.maxWidth = '100%';
+                            img.style.background = '#fff';
+                            img.onload = function () { pre.style.display = 'none'; };
+                            img.onerror = function () { img.remove(); };
+                            pre.parentNode.insertBefore(img, pre);
+                            img.src = 'https://kroki.io/d2/svg/' + b64;
+                        } catch (e) { console.error('d2 render', e); }
+                    });
+                }
+            } catch (e) { console.error('d2', e); }
+        });
     </script>
 {% endblock %}
