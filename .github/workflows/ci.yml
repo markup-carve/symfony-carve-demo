@@ -41,4 +41,21 @@ jobs:
             echo "$route -> $code"
             test "$code" = "200"
           done
+
+          # The Diagrams page must emit the hydration markup for all eight presets.
+          diagrams=$(curl -s "http://127.0.0.1:8000/diagrams")
+          for marker in 'pre class="mermaid"' 'pre class="graphviz"' 'pre class="d2"' \
+                        'pre class="plantuml"' 'class="vega-lite"' 'pre class="wavedrom"' \
+                        'class="chart"' 'pre class="abc"'; do
+            echo "$diagrams" | grep -q "$marker"
+            echo "diagrams markup ok: $marker"
+          done
+
+          # The Syntax page must include the newer constructs.
+          syntax=$(curl -s "http://127.0.0.1:8000/syntax")
+          echo "$syntax" | grep -q 'Inline literal'
+          echo "$syntax" | grep -q '<dl>'
+          echo "$syntax" | grep -q 'doc-noteref'
+          echo "syntax markup ok"
+
           kill $SERVER_PID

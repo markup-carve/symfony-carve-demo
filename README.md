@@ -45,8 +45,8 @@ Then open <http://localhost:8000>.
 | Service | `/service` | Inject `CarveRenderer` and call `render()` from PHP |
 | Live Editor | `/form` | Type Carve in a form, submit, and see the rendered preview |
 | Safe Mode | `/safe-mode` | Raw-HTML `strip` / `escape` / `allow` and disabled, side by side, against an XSS payload |
-| Syntax | `/syntax` | A gallery of Carve constructs and their HTML output |
-| Diagrams | `/diagrams` | The `diagrams` config option turning fences into diagram hydration elements (with a live Mermaid render) |
+| Syntax | `/syntax` | A gallery of Carve constructs, including the inline literal `` !`...` ``, definition lists, footnotes, smart typography, tight vs loose lists, and the strict column-0 rule |
+| Diagrams | `/diagrams` | The `diagrams` config option turning fences into diagram hydration elements, with all eight presets drawn live in the browser |
 
 ## Screenshots
 
@@ -90,14 +90,15 @@ The bundle is configured in `config/packages/carve.yaml`:
 carve:
     safe_mode: true   # sanitize HTML (default)
     raw_html: strip   # strip | escape | allow
-    diagrams: ['mermaid', 'plantuml', 'graphviz', 'd2']   # diagram fence presets (default: [])
+    # All eight presets; note the enum spells Vega-Lite `vega_lite` (underscore).
+    diagrams: ['mermaid', 'plantuml', 'graphviz', 'd2', 'vega_lite', 'wavedrom', 'chart', 'abc']   # default: []
 ```
 
 | Key         | Type     | Default | Description                                                                 |
 |-------------|----------|---------|-----------------------------------------------------------------------------|
 | `safe_mode` | bool     | `true`  | Enable HTML sanitization. Keep on for untrusted input.                      |
 | `raw_html`  | enum     | `strip` | How raw HTML is handled when `safe_mode` is on: `strip`, `escape`, `allow`. |
-| `diagrams`  | string[] | `[]`    | Diagram fenced-block presets to enable (`mermaid`, `plantuml`, `graphviz`, `d2`, `wavedrom`, `vega_lite`, `chart`, `abc`). Off by default. |
+| `diagrams`  | string[] | `[]`    | Diagram fenced-block presets to enable: `mermaid`, `plantuml`, `graphviz`, `d2`, `wavedrom`, `vega_lite`, `chart`, `abc`. Off by default. The enum spells Vega-Lite `vega_lite` (underscore); the fence word authors type is `vega-lite` (hyphen). |
 
 The Safe Mode page renders the same untrusted input under each setting so you can see the difference directly.
 
@@ -105,19 +106,32 @@ The Safe Mode page renders the same untrusted input under each setting so you ca
 
 With a preset listed under `diagrams`, a matching fence renders as a hydration element for a
 client-side renderer instead of a plain code block - for example a ` ``` mermaid ` block becomes
-`<pre class="mermaid">...</pre>`. The bundle only emits the markup; it never draws the diagram or
-ships a renderer, so each preset needs its own browser library on the page:
+`<pre class="mermaid">...</pre>`, and a ` ``` vega-lite ` block becomes
+`<div class="vega-lite"><script type="application/json">...</script></div>`. The bundle only emits
+the markup; it never draws the diagram or ships a renderer, so each preset needs its own browser
+library on the page.
 
-- **Graphviz** and **D2** render fully offline via the WebAssembly helpers in
-  `markup-carve/carve-grammars` (no server, no external call).
-- **Mermaid**, **WaveDrom**, **Vega-Lite**, **Chart.js**, and **ABC** each need their own library
-  (mermaid.js, wavedrom, vega-embed, chart.js, abcjs). The Diagrams page loads mermaid.js from a
-  CDN, so drawing the live Mermaid example needs network access to that CDN in the browser.
-- **PlantUML** has no practical in-browser renderer; draw it through a [Kroki](https://kroki.io)
-  server. The public server sends your source off-domain, so self-host it for sensitive content.
+The Diagrams page wires one renderer per type (all from public CDNs) and draws every preset live.
+Each card shows the Carve source, the emitted markup, and the drawn result. Every renderer degrades
+gracefully: if a library or server is unreachable, the diagram source stays visible as text.
 
-The Diagrams page shows the same fence with the option off (plain code block) and on (hydration
-element) side by side, plus Mermaid, PlantUML, and Graphviz examples.
+| Preset | Emitted element | Browser renderer | Runtime prerequisite |
+|--------|-----------------|------------------|----------------------|
+| `mermaid`   | `<pre class="mermaid">`   | mermaid.js                     | CDN load; draws client-side |
+| `graphviz`  | `<pre class="graphviz">`  | `@viz-js/viz` (WebAssembly)    | CDN load; then renders offline |
+| `d2`        | `<pre class="d2">`        | [Kroki](https://kroki.io) server (deflate-encoded) | CDN load + network to Kroki at render time |
+| `plantuml`  | `<pre class="plantuml">`  | [PlantUML server](https://www.plantuml.com/plantuml) via its `~h` hex scheme | network to the PlantUML server at render time |
+| `vega_lite` | `<div class="vega-lite">` | vega + vega-lite + vega-embed  | CDN load; draws client-side |
+| `wavedrom`  | `<pre class="wavedrom">`  | wavedrom + default skin        | CDN load; draws client-side |
+| `chart`     | `<div class="chart">`     | chart.js (onto a `<canvas>`)   | CDN load; draws client-side |
+| `abc`       | `<pre class="abc">`       | abcjs                          | CDN load; draws client-side |
+
+D2 and PlantUML have no small in-browser build, so they are drawn through public servers (Kroki and
+the PlantUML server). Those servers receive your diagram source, so self-host them for sensitive
+content. Every other preset draws entirely client-side once its library has loaded from the CDN.
+
+The Diagrams page also shows the same fence with the option off (plain code block) and on (hydration
+element) side by side.
 
 ## Carve syntax cheat sheet
 
@@ -131,9 +145,19 @@ Carve's inline markers differ from Markdown - this is the most common surprise:
 | `=highlight=`     | highlighted          | `<mark>`    |
 | `~strikethrough~` | struck through       | `<s>`       |
 | `{^superscript^}` | superscript          | `<sup>`     |
+| `{,subscript,}`   | subscript            | `<sub>`     |
+| `` !`literal` ``  | verbatim characters, no code styling | plain text |
 
-Block constructs (`# heading`, `- list`, `> quote`, fenced code, tables, `::: note` admonitions) follow the
-[Carve specification](https://github.com/markup-carve/carve). The Syntax page renders a live example of each.
+Sup/sub are braced only (`{^x^}` / `{,x,}`) - Carve does not treat bare `^`/`,` as markers. The inline
+literal `` !`...` `` shows the characters between the backticks exactly, with no code styling and no further
+markup processing.
+
+Block constructs follow the [Carve specification](https://github.com/markup-carve/carve): `# heading`,
+`- list` (tight vs loose), `> quote`, fenced code, tables, `::: note` admonitions, definition lists
+(`:: term` / `:  definition`), and footnotes (`[^ref]` with a `[^ref]:` body). Carve also applies smart
+typography - `--` becomes an en dash, `---` an em dash, `...` an ellipsis, and straight quotes become curly.
+Block markers are strict about column 0: an indented `#` or `-` stays literal text rather than opening a
+heading or list. The Syntax page renders a live example of each.
 
 ## How it is wired
 
