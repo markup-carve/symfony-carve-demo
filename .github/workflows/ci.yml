@@ -36,7 +36,7 @@ jobs:
           SERVER_PID=$!
           sleep 2
           set -e
-          for route in / /twig-filter /twig-function /service /form /safe-mode /syntax /diagrams; do
+          for route in / /twig-filter /twig-function /service /outputs-profiles /form /safe-mode /syntax /diagrams; do
             code=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:8000$route")
             echo "$route -> $code"
             test "$code" = "200"
@@ -57,5 +57,14 @@ jobs:
           echo "$syntax" | grep -q '<dl>'
           echo "$syntax" | grep -q 'doc-noteref'
           echo "syntax markup ok"
+
+          outputs=$(curl -s "http://127.0.0.1:8000/outputs-profiles")
+          echo "$outputs" | grep -q 'Plain text'
+          echo "$outputs" | grep -q 'Markdown'
+          echo "$outputs" | grep -q 'Comment profile'
+          echo "$outputs" | grep -q 'id="twig-text-output"'
+          echo "$outputs" | grep -q 'id="twig-markdown-output"'
+          echo "$outputs" | grep -q '<p># Release notes</p>'
+          echo "output targets and profile markup ok"
 
           kill $SERVER_PID

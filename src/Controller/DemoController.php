@@ -80,6 +80,27 @@ class DemoController extends AbstractController
         ]);
     }
 
+    #[Route('/outputs-profiles', name: 'outputs_profiles')]
+    public function outputsProfiles(CarveRenderer $carve): Response
+    {
+        $source = <<<'CARVE'
+            # Release notes
+
+            Carve /renders/ to *HTML*, plain text, and Markdown from one source.
+
+            ![A diagram](diagram.svg)
+            CARVE;
+        $comment = new CarveRenderer(profile: 'comment');
+
+        return $this->render('demo/outputs_profiles.html.twig', [
+            'source' => $source,
+            'html' => $carve->render($source),
+            'text' => $carve->renderText($source),
+            'markdown' => $carve->renderMarkdown($source),
+            'comment_html' => $comment->render($source),
+        ]);
+    }
+
     #[Route('/form', name: 'form')]
     public function form(Request $request, CarveRenderer $carve): Response
     {

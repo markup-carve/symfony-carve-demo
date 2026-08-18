@@ -1,6 +1,5 @@
 /vendor/
 /var/
-composer.lock
 .env.local
 .phpunit.result.cache
 _*

@@ -8,8 +8,8 @@ A small, runnable Symfony application that showcases every feature of the
 Carve is "Djot minus the footguns": a lightweight markup language with consistent, unambiguous syntax.
 
 > [!NOTE]
-> This demo tracks the released packages from Packagist: `markup-carve/symfony-carve` `^0.1.2` (which pulls
-> `markup-carve/carve-php` `0.1.3`). A plain `composer install` just works.
+> This demo tracks the released packages from Packagist: `markup-carve/symfony-carve` `^0.1.4` (which pulls
+> `markup-carve/carve-php` `^0.1.5`). A plain `composer install` just works.
 
 ## Requirements
 
@@ -40,6 +40,7 @@ Then open <http://localhost:8000>.
 | Twig Filter | `/twig-filter` | `{{ source\|carve }}` - render a Carve string in a template |
 | Twig Function | `/twig-function` | `{{ carve(source) }}` - the function form |
 | Service | `/service` | Inject `CarveRenderer` and call `render()` from PHP |
+| Outputs & Profiles | `/outputs-profiles` | HTML, plain-text, and Markdown targets plus feature-restriction profiles (0.1.4) |
 | Live Editor | `/form` | Type Carve in a form, submit, and see the rendered preview |
 | Safe Mode | `/safe-mode` | Raw-HTML `strip` / `escape` / `allow` and disabled, side by side, against an XSS payload |
 | Syntax | `/syntax` | A gallery of Carve constructs, including the inline literal `` !`...` ``, definition lists, footnotes, smart typography, tight vs loose lists, and the strict column-0 rule |
