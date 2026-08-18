@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="240" viewBox="0 0 640 240" role="img" aria-labelledby="title desc">
+  <title id="title">Carve rendering targets</title>
+  <desc id="desc">One Carve source document produces HTML, plain text, and Markdown.</desc>
+  <rect width="640" height="240" rx="20" fill="#f5f3ff"/>
+  <g fill="#312e81" font-family="system-ui, sans-serif" text-anchor="middle">
+    <rect x="36" y="76" width="152" height="88" rx="12" fill="#ddd6fe" stroke="#7c3aed" stroke-width="3"/>
+    <text x="112" y="126" font-size="24" font-weight="700">Carve</text>
+    <path d="M188 120h68" stroke="#7c3aed" stroke-width="4"/>
+    <path d="m246 109 14 11-14 11" fill="none" stroke="#7c3aed" stroke-width="4"/>
+    <rect x="272" y="36" width="132" height="48" rx="10" fill="#ede9fe"/>
+    <rect x="272" y="96" width="132" height="48" rx="10" fill="#ede9fe"/>
+    <rect x="272" y="156" width="132" height="48" rx="10" fill="#ede9fe"/>
+    <text x="338" y="67" font-size="18">HTML</text>
+    <text x="338" y="127" font-size="18">Plain text</text>
+    <text x="338" y="187" font-size="18">Markdown</text>
+  </g>
+</svg>
