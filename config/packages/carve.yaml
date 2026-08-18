@@ -3,6 +3,7 @@
 carve:
     safe_mode: true   # sanitize HTML (recommended for untrusted input)
     raw_html: strip   # strip | escape | allow
+    profile: null     # null | full | article | comment | minimal
 
     # Diagram fenced-block presets to enable. A matching fence (e.g. ``` mermaid)
     # then renders as a hydration element (<pre class="mermaid">...) for a

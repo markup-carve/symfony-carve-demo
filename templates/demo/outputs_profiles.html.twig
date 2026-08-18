@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Outputs &amp; Profiles &middot; symfony-carve{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <h1>Outputs &amp; Profiles</h1>
+        <p class="lead">One renderer exposes HTML, plain-text, and Markdown targets.
+            Named profiles restrict the same source consistently across every target.</p>
+        <pre><code>$carve->render($source);
+$carve->renderText($source);
+$carve->renderMarkdown($source);
+
+$comments = new CarveRenderer(profile: 'comment');</code></pre>
+    </div>
+
+    <div class="card">
+        <h2>Carve source</h2>
+        <pre><code>{{ source }}</code></pre>
+    </div>
+
+    <div class="columns">
+        <div class="card">
+            <h2>HTML</h2>
+            <div class="rendered">{{ html|raw }}</div>
+            <pre><code>{{ html }}</code></pre>
+        </div>
+        <div class="card">
+            <h2>Plain text</h2>
+            <pre><code>{{ text }}</code></pre>
+        </div>
+        <div class="card">
+            <h2>Markdown</h2>
+            <pre><code>{{ markdown }}</code></pre>
+        </div>
+        <div class="card">
+            <h2>Comment profile</h2>
+            <p>The comment profile rejects document-level headings and images.</p>
+            <div class="rendered">{{ comment_html|raw }}</div>
+            <pre><code>{{ comment_html }}</code></pre>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Twig output filters</h2>
+        <p>The same non-HTML targets are available as normally escaped Twig filters.</p>
+        <pre><code>{{ '{{ source|carve_text }}' }}
+{{ '{{ source|carve_markdown }}' }}</code></pre>
+        <h3>carve_text</h3>
+        <pre id="twig-text-output"><code>{{ source|carve_text }}</code></pre>
+        <h3>carve_markdown</h3>
+        <pre id="twig-markdown-output"><code>{{ source|carve_markdown }}</code></pre>
+    </div>
+{% endblock %}
