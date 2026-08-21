@@ -88,7 +88,7 @@ class DemoController extends AbstractController
 
             Carve /renders/ to *HTML*, plain text, and Markdown from one source.
 
-            ![A diagram](diagram.svg)
+            ![A diagram](/diagram.svg)
             CARVE;
         $comment = new CarveRenderer(profile: 'comment');
 
