@@ -158,7 +158,3 @@ heading or list. The Syntax page renders a live example of each.
 - `config/packages/carve.yaml` holds the bundle configuration.
 - `src/Controller/DemoController.php` autowires `CarveRenderer` and renders each page.
 - No database: the Live Editor uses a plain, non-persisted `Article` object.
-
-## License
-
-MIT
