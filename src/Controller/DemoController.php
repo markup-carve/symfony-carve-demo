@@ -29,7 +29,7 @@ class DemoController extends AbstractController
         - [x] Task lists work
         - [ ] Even unchecked ones
 
-        > Carve is Djot minus the footguns.
+        > Carve is a lightweight markup language for structured documents, with clear, consistent syntax.
 
         ### Code
 
