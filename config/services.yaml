@@ -12,3 +12,12 @@ services:
     App\Controller\:
         resource: '../src/Controller/'
         tags: ['controller.service_arguments']
+
+    App\Carve\ConfigIncludeResolver:
+        arguments:
+            $snippets:
+                account-status: |
+                    ::: note "Account status"
+                    You have *3 pending reviews* in the current workspace.
+                    :::
+                support-hours: 'Support is available Monday to Friday, 09:00 to 17:00 UTC.'
