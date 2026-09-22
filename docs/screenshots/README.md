@@ -9,6 +9,13 @@ Overview of all features.
 
 ![Home page](home.png)
 
+## Includes
+
+Trusted file-backed content and application-provided snippets, with each
+directive's resolved dependency report.
+
+![Includes](includes.png)
+
 ## Twig filter
 
 Carve source and rendered HTML side by side.
