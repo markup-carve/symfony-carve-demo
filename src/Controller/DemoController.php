@@ -80,6 +80,20 @@ class DemoController extends AbstractController
         ]);
     }
 
+    #[Route('/file-includes', name: 'file_includes')]
+    public function fileIncludes(CarveRenderer $carve): Response
+    {
+        $path = dirname(__DIR__, 2) . '/content/main.crv';
+        $report = $carve->renderFileWithReport($path);
+
+        return $this->render('demo/file_includes.html.twig', [
+            'source' => (string) file_get_contents($path),
+            'html' => $report['value'],
+            'dependencies' => $report['dependencies'],
+            'warnings' => $report['warnings'],
+        ]);
+    }
+
     #[Route('/outputs-profiles', name: 'outputs_profiles')]
     public function outputsProfiles(CarveRenderer $carve): Response
     {
