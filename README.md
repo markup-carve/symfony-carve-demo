@@ -40,6 +40,7 @@ Then open <http://localhost:8000>.
 | Twig Filter | `/twig-filter` | `{{ source\|carve }}` - render a Carve string in a template |
 | Twig Function | `/twig-function` | `{{ carve(source) }}` - the function form |
 | Service | `/service` | Inject `CarveRenderer` and call `render()` from PHP |
+| Includes | `/includes` | Trusted file-backed content and configuration-backed snippets |
 | Outputs & Profiles | `/outputs-profiles` | HTML, plain-text, and Markdown targets plus feature-restriction profiles (0.1.4) |
 | Live Editor | `/form` | Type Carve in a form, submit, and see the rendered preview |
 | Safe Mode | `/safe-mode` | Raw-HTML `strip` / `escape` / `allow` and disabled, side by side, against an XSS payload |
@@ -48,7 +49,7 @@ Then open <http://localhost:8000>.
 
 ## Screenshots
 
-See the **[screenshot gallery](docs/screenshots/)** for a visual tour - the live diagram gallery (all eight fenced-render presets drawn live), the Twig filter, the live editor, safe mode, the syntax gallery, and the home page.
+See the **[screenshot gallery](docs/screenshots/)** for a visual tour of Includes, the live diagram gallery with all eight presets drawn live, the Twig filter, the live editor, safe mode, the syntax gallery, and the home page.
 
 
 ### Twig
