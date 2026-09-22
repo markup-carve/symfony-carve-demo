@@ -729,6 +729,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     raw_html?: "strip"|"escape"|"allow"|Param, // How raw HTML is treated when safe_mode is on. // Default: "strip"
  *     profile?: null|"full"|"article"|"comment"|"minimal"|Param, // Restrict the available markup features for a rendering context. // Default: null
  *     diagrams?: list<"mermaid"|"plantuml"|"d2"|"graphviz"|"wavedrom"|"vega_lite"|"chart"|"abc"|Param>,
+ *     include_root?: scalar|Param|null, // Absolute containment root for opt-in file includes. String and Twig rendering remain literal. The resolver refuses a relative root rather than resolving it against the working directory. // Default: null
  * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
