@@ -3,6 +3,7 @@
 carve:
     safe_mode: true   # sanitize HTML (recommended for untrusted input)
     raw_html: strip   # strip | escape | allow
+    include_root: '%kernel.project_dir%/content'
     profile: null     # null | full | article | comment | minimal
 
     # Diagram fenced-block presets to enable. A matching fence (e.g. ``` mermaid)
