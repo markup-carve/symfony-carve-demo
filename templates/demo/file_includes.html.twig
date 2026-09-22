@@ -1,16 +1,27 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}File includes{% endblock %}
+{% block title %}Includes{% endblock %}
 
 {% block body %}
     <div class="card">
-        <h1>File Includes</h1>
-        <p>Only <code>renderFileWithReport()</code> expands includes. The configured root keeps every target contained.</p>
-        <pre><code>{{ source }}</code></pre>
+        <h1>Includes</h1>
+        <p>Includes can read trusted files or resolve application-provided snippets. Both paths remain explicit.</p>
+        <h2>File-backed content</h2>
+        <p><code>renderFileWithReport()</code> expands content inside the configured root.</p>
+        <pre><code>{{ file_source }}</code></pre>
         <h2>Rendered result</h2>
-        <div class="rendered">{{ html|raw }}</div>
+        <div class="rendered">{{ file_html|raw }}</div>
         <h2>Dependencies</h2>
-        <ul>{% for dependency in dependencies %}<li><code>{{ dependency.path }}</code> — {{ dependency.resolved ? 'resolved' : 'missing' }}</li>{% endfor %}</ul>
-        {% if warnings is not empty %}<h2>Warnings</h2><ul>{% for warning in warnings %}<li>{{ warning.message }}</li>{% endfor %}</ul>{% endif %}
+        <ul>{% for dependency in file_dependencies %}<li><code>{{ dependency.path }}</code> — {{ dependency.resolved ? 'resolved' : 'missing' }}</li>{% endfor %}</ul>
+        {% if file_warnings is not empty %}<h2>Warnings</h2><ul>{% for warning in file_warnings %}<li>{{ warning.message }}</li>{% endfor %}</ul>{% endif %}
+
+        <h2>Configuration-backed snippets</h2>
+        <p>A custom resolver reads trusted application configuration. The same resolver seam can query a database or another content store.</p>
+        <pre><code>{{ dynamic_source }}</code></pre>
+        <h3>Rendered result</h3>
+        <div class="rendered">{{ dynamic_html|raw }}</div>
+        <h3>Resolved snippets</h3>
+        <ul>{% for dependency in dynamic_dependencies %}<li><code>{{ dependency.target }}</code> — {{ dependency.resolved ? 'resolved' : 'missing' }}</li>{% endfor %}</ul>
+        {% if dynamic_warnings is not empty %}<h3>Warnings</h3><ul>{% for warning in dynamic_warnings %}<li>{{ warning.message }}</li>{% endfor %}</ul>{% endif %}
     </div>
 {% endblock %}
