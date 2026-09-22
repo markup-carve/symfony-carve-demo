@@ -5,7 +5,7 @@ A small, runnable Symfony application that showcases every feature of the
 [Carve](https://github.com/markup-carve/carve) markup to HTML through the
 [carve-php](https://github.com/markup-carve/carve-php) reference implementation.
 
-Carve is "Djot minus the footguns": a lightweight markup language with consistent, unambiguous syntax.
+Carve is a lightweight markup language for structured documents, with clear, consistent syntax.
 
 > [!NOTE]
 > This demo tracks the released packages from Packagist: `markup-carve/symfony-carve` `^0.1.4` (which pulls
