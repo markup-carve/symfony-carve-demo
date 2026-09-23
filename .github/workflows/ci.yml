@@ -36,7 +36,7 @@ jobs:
           SERVER_PID=$!
           sleep 2
           set -e
-          for route in / /twig-filter /twig-function /service /outputs-profiles /form /safe-mode /syntax /diagrams; do
+          for route in / /twig-filter /twig-function /service /includes /outputs-profiles /form /safe-mode /syntax /diagrams; do
             code=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:8000$route")
             echo "$route -> $code"
             test "$code" = "200"
@@ -70,5 +70,12 @@ jobs:
           asset_code=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:8000/diagram.svg")
           test "$asset_code" = "200"
           echo "embedded demo asset -> $asset_code"
+
+          invalid_response=$(curl -s -w '\n%{http_code}' -X POST \
+            -d 'article[title]=&article[body]=' "http://127.0.0.1:8000/form")
+          invalid_code=$(echo "$invalid_response" | tail -n 1)
+          test "$invalid_code" = "200"
+          echo "$invalid_response" | grep -q 'This value should not be blank'
+          echo "form validation -> $invalid_code"
 
           kill $SERVER_PID

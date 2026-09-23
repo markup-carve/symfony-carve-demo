@@ -7,7 +7,12 @@
         <h2>Live editor</h2>
         <p class="lead">Type Carve markup, submit, and see it rendered. Input is sanitized by the configured safe mode.</p>
 
-        {{ form_start(form) }}
+        {% if static_export %}
+            <p class="warning">This form works only in a local checkout. Clone the repository and run <code>composer install &amp;&amp; symfony server:start</code>.</p>
+        {% endif %}
+
+        {{ form_start(form, {attr: static_export ? {inert: '', 'aria-disabled': 'true'} : {}}) }}
+            <fieldset{% if static_export %} disabled{% endif %}>
             <div>
                 {{ form_label(form.title) }}
                 {{ form_widget(form.title) }}
@@ -23,6 +28,7 @@
                 {{ form_widget(form.comment) }}
             </div>
             {{ form_widget(form.render) }}
+            </fieldset>
         {{ form_end(form) }}
     </div>
 

@@ -95,9 +95,13 @@
             .badge-safe { background: #28a745; color: #fff; }
             .badge-unsafe { background: #dc3545; color: #fff; }
             .label { font-weight: bold; color: #52606d; margin-bottom: 6px; }
+            .static-preview { background: #e8f0fe; border: 1px solid #7aa2e3; padding: 12px 15px; border-radius: 6px; margin-bottom: 20px; }
         </style>
     </head>
     <body>
+        {% if static_export %}
+            <div class="static-preview"><strong>Static preview.</strong> Server-backed interactions are available only in a local checkout.</div>
+        {% endif %}
         <nav>
             <a href="{{ path('home') }}">Home</a>
             <a href="{{ path('twig_filter') }}">Twig Filter</a>

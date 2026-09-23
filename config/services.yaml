@@ -21,3 +21,9 @@ services:
                     You have *3 pending reviews* in the current workspace.
                     :::
                 support-hours: 'Support is available Monday to Friday, 09:00 to 17:00 UTC.'
+
+    App\Command\ExportDemoCommand:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+            $staticExport: '%env(bool:STATIC_EXPORT)%'
+            $staticBasePath: '%env(STATIC_BASE_PATH)%'
