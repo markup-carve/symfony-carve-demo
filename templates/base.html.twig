@@ -31,6 +31,8 @@
                 font-size: 15px;
             }
             nav a:hover { background: #3e4c59; }
+            .repo-links { margin: -10px 0 20px; text-align: right; font-size: 14px; }
+            .repo-links a { margin-left: 12px; }
             h1, h2, h3 { color: #1f2933; }
             .lead { color: #52606d; }
             .card {
@@ -130,6 +132,10 @@
             <a href="{{ path('syntax') }}">Syntax</a>
             <a href="{{ path('diagrams') }}">Diagrams</a>
         </nav>
+        <div class="repo-links">
+            <a href="https://github.com/markup-carve/symfony-carve-demo">Demo source</a>
+            <a href="https://github.com/markup-carve/symfony-carve">symfony-carve package</a>
+        </div>
         {% block body %}{% endblock %}
     </body>
 </html>

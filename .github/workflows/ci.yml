@@ -40,6 +40,9 @@ jobs:
             code=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:8000$route")
             echo "$route -> $code"
             test "$code" = "200"
+            page=$(curl -s "http://127.0.0.1:8000$route")
+            echo "$page" | grep -q 'href="https://github.com/markup-carve/symfony-carve-demo"'
+            echo "$page" | grep -q 'href="https://github.com/markup-carve/symfony-carve"'
           done
 
           # The Diagrams page must emit the hydration markup for all eight presets.
@@ -58,6 +61,12 @@ jobs:
           echo "$syntax" | grep -q 'doc-noteref'
           echo "$syntax" | grep -qx '\. first'
           echo "$syntax" | grep -A1 '^<ol>$' | grep -q '<li>first</li>'
+          echo "$syntax" | grep -q '|= Lang |= Status |'
+          if echo "$syntax" | grep -q '|------|--------|'; then
+            exit 1
+          fi
+          echo "$syntax" | grep -q '<th scope="col">Lang</th>'
+          echo "$syntax" | grep -q 'alt="Demo diagram"'
           echo "$syntax" | grep -q 'li:has(> input\[type="checkbox"\])'
           echo "syntax markup ok"
 
