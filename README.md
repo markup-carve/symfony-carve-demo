@@ -1,9 +1,11 @@
 # symfony-carve demo
 
-A small, runnable Symfony application that demonstrates every feature of the
+A runnable Symfony application demonstrating the
 [markup-carve/symfony-carve](https://github.com/markup-carve/symfony-carve) bundle, which renders
 [Carve](https://github.com/markup-carve/carve) markup to HTML through the
 [carve-php](https://github.com/markup-carve/carve-php) reference implementation.
+
+**[View the live demo →](https://markup-carve.github.io/symfony-carve-demo/)**
 
 Carve is a lightweight markup language for structured documents, with clear, consistent syntax.
 
@@ -49,7 +51,7 @@ Then open <http://localhost:8000>.
 
 ## Screenshots
 
-See the **[screenshot gallery](docs/screenshots/)** for a visual tour of Includes, the live diagram gallery with all eight presets drawn live, the Twig filter, the live editor, safe mode, the syntax gallery, and the home page.
+See the [screenshot gallery](docs/screenshots/) for Includes, diagrams, Twig, the editor, safe mode, syntax, and home.
 
 
 ### Twig

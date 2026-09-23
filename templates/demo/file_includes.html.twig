@@ -12,7 +12,7 @@
         <h2>Rendered result</h2>
         <div class="rendered">{{ file_html|raw }}</div>
         <h2>Dependencies</h2>
-        <ul>{% for dependency in file_dependencies %}<li><code>{{ dependency.path }}</code> — {{ dependency.resolved ? 'resolved' : 'missing' }}</li>{% endfor %}</ul>
+        <ul>{% for dependency in file_dependencies %}<li><code>{{ dependency.path }}</code>: {{ dependency.resolved ? 'resolved' : 'missing' }}</li>{% endfor %}</ul>
         {% if file_warnings is not empty %}<h2>Warnings</h2><ul>{% for warning in file_warnings %}<li>{{ warning.message }}</li>{% endfor %}</ul>{% endif %}
 
         <h2>Configuration-backed snippets</h2>
@@ -21,7 +21,7 @@
         <h3>Rendered result</h3>
         <div class="rendered">{{ dynamic_html|raw }}</div>
         <h3>Resolved snippets</h3>
-        <ul>{% for dependency in dynamic_dependencies %}<li><code>{{ dependency.target }}</code> — {{ dependency.resolved ? 'resolved' : 'missing' }}</li>{% endfor %}</ul>
+        <ul>{% for dependency in dynamic_dependencies %}<li><code>{{ dependency.target }}</code>: {{ dependency.resolved ? 'resolved' : 'missing' }}</li>{% endfor %}</ul>
         {% if dynamic_warnings is not empty %}<h3>Warnings</h3><ul>{% for warning in dynamic_warnings %}<li>{{ warning.message }}</li>{% endfor %}</ul>{% endif %}
     </div>
 {% endblock %}

@@ -41,6 +41,7 @@ jobs:
             echo "$route -> $code"
             test "$code" = "200"
             page=$(curl -s "http://127.0.0.1:8000$route")
+            echo "$page" | grep -q 'href="https://markup-carve.github.io/carve/"'
             echo "$page" | grep -q 'href="https://github.com/markup-carve/symfony-carve-demo"'
             echo "$page" | grep -q 'href="https://github.com/markup-carve/symfony-carve"'
           done

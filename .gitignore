@@ -1,5 +1,6 @@
 /vendor/
 /dist/
+/local-static-preview/
 /var/
 .env.local
 .phpunit.result.cache

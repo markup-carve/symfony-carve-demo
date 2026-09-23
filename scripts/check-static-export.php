@@ -13,6 +13,9 @@ foreach ($iterator as $file) {
     if (! str_contains($html, 'Static preview')) {
         $errors[] = "{$file->getPathname()}: missing static-preview declaration";
     }
+    if (! str_contains($html, 'href="https://markup-carve.github.io/carve/"')) {
+        $errors[] = "{$file->getPathname()}: missing Carve website link";
+    }
     preg_match_all('/(?:href|src|action)=(["\'])([^"\'#]+)\1/', $html, $matches);
     foreach ($matches[2] as $url) {
         if (str_starts_with($url, '/') && ! str_starts_with($url, $basePath.'/')) {

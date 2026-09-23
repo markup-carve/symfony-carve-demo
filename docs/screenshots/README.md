@@ -5,7 +5,7 @@ A visual tour of the symfony-carve demo app. Boot it (`symfony serve` or
 
 ## Home
 
-Overview of all features.
+Overview of all demo pages.
 
 ![Home page](home.png)
 
