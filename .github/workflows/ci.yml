@@ -56,7 +56,13 @@ jobs:
           echo "$syntax" | grep -q 'Inline literal'
           echo "$syntax" | grep -q '<dl>'
           echo "$syntax" | grep -q 'doc-noteref'
+          echo "$syntax" | grep -qx '\. first'
+          echo "$syntax" | grep -A1 '^<ol>$' | grep -q '<li>first</li>'
+          echo "$syntax" | grep -q 'li:has(> input\[type="checkbox"\])'
           echo "syntax markup ok"
+
+          echo "$diagrams" | grep -q "theme: 'neutral'"
+          echo "$diagrams" | grep -q 'live-render > pre\[class\]'
 
           outputs=$(curl -s "http://127.0.0.1:8000/outputs-profiles")
           echo "$outputs" | grep -q 'Plain text'

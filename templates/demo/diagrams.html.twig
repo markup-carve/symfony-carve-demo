@@ -104,7 +104,7 @@
             // Mermaid: upgrades <pre class="mermaid"> in place.
             try {
                 if (window.mermaid) {
-                    mermaid.initialize({ startOnLoad: false });
+                    mermaid.initialize({ startOnLoad: false, theme: 'neutral' });
                     mermaid.run({ querySelector: scope + '.mermaid' });
                 }
             } catch (e) { console.error('mermaid', e); }

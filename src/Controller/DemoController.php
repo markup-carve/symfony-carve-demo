@@ -265,7 +265,7 @@ class DemoController extends AbstractController
             'Headings' => "# Heading 1\n## Heading 2\n### Heading 3",
             'Emphasis' => "/italic/\n\n*bold*\n\n_underline_\n\n=highlight=\n\n~strikethrough~",
             'Superscript & subscript' => "Braced only: E = mc{^2^} and H{,2,}O.",
-            'Lists' => "- one\n- two\n  - nested\n\n1. first\n2. second",
+            'Lists' => "- one\n- two\n  - nested\n\n. first\n. second",
             'Task list' => "- [x] done\n- [ ] todo",
             'Tight vs loose lists' => "Tight (no blank lines):\n\n- one\n- two\n\nLoose (blank lines between items wrap each in a paragraph):\n\n- one\n\n- two",
             'Definition list' => ":: Carve\n:  A post-Markdown markup language.\n\n:: Djot\n:  The project Carve refines.",
