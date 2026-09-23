@@ -71,11 +71,10 @@ jobs:
           test "$asset_code" = "200"
           echo "embedded demo asset -> $asset_code"
 
-          invalid_response=$(curl -s -w '\n%{http_code}' -X POST \
+          invalid_code=$(curl -s -o /tmp/invalid-form.html -w '%{http_code}' -X POST \
             -d 'article[title]=&article[body]=' "http://127.0.0.1:8000/form")
-          invalid_code=$(echo "$invalid_response" | tail -n 1)
-          test "$invalid_code" = "200"
-          echo "$invalid_response" | grep -q 'This value should not be blank'
+          test "$invalid_code" = "422"
+          grep -q 'This value should not be blank' /tmp/invalid-form.html
           echo "form validation -> $invalid_code"
 
           kill $SERVER_PID
