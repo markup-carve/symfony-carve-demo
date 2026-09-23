@@ -36,10 +36,14 @@ jobs:
           SERVER_PID=$!
           sleep 2
           set -e
-          for route in / /twig-filter /twig-function /service /outputs-profiles /form /safe-mode /syntax /diagrams; do
+          for route in / /twig-filter /twig-function /service /includes /outputs-profiles /form /safe-mode /syntax /diagrams; do
             code=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:8000$route")
             echo "$route -> $code"
             test "$code" = "200"
+            page=$(curl -s "http://127.0.0.1:8000$route")
+            echo "$page" | grep -q 'href="https://markup-carve.github.io/carve/"'
+            echo "$page" | grep -q 'href="https://github.com/markup-carve/symfony-carve-demo"'
+            echo "$page" | grep -q 'href="https://github.com/markup-carve/symfony-carve"'
           done
 
           # The Diagrams page must emit the hydration markup for all eight presets.
@@ -56,7 +60,24 @@ jobs:
           echo "$syntax" | grep -q 'Inline literal'
           echo "$syntax" | grep -q '<dl>'
           echo "$syntax" | grep -q 'doc-noteref'
+          echo "$syntax" | grep -qx '\. first'
+          echo "$syntax" | grep -A1 '^<ol>$' | grep -q '<li>first</li>'
+          echo "$syntax" | grep -q '|= Lang |= Status |'
+          if echo "$syntax" | grep -q '|------|--------|'; then
+            exit 1
+          fi
+          echo "$syntax" | grep -q '<th scope="col">Lang</th>'
+          echo "$syntax" | grep -q 'alt="Demo diagram"'
+          echo "$syntax" | grep -qx ': A post-Markdown markup language.'
+          if echo "$syntax" | grep -q ':  A post-Markdown markup language.'; then
+            exit 1
+          fi
+          echo "$syntax" | grep -q '\\# This stays literal text'
+          echo "$syntax" | grep -q 'li:has(> input\[type="checkbox"\])'
           echo "syntax markup ok"
+
+          echo "$diagrams" | grep -q "theme: 'neutral'"
+          echo "$diagrams" | grep -q 'live-render > pre\[class\]'
 
           outputs=$(curl -s "http://127.0.0.1:8000/outputs-profiles")
           echo "$outputs" | grep -q 'Plain text'
@@ -70,5 +91,11 @@ jobs:
           asset_code=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:8000/diagram.svg")
           test "$asset_code" = "200"
           echo "embedded demo asset -> $asset_code"
+
+          invalid_code=$(curl -s -o /tmp/invalid-form.html -w '%{http_code}' -X POST \
+            -d 'article[title]=&article[body]=' "http://127.0.0.1:8000/form")
+          test "$invalid_code" = "422"
+          grep -q 'This value should not be blank' /tmp/invalid-form.html
+          echo "form validation -> $invalid_code"
 
           kill $SERVER_PID

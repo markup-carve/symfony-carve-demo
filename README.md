@@ -1,9 +1,11 @@
 # symfony-carve demo
 
-A small, runnable Symfony application that showcases every feature of the
+A runnable Symfony application demonstrating the
 [markup-carve/symfony-carve](https://github.com/markup-carve/symfony-carve) bundle, which renders
 [Carve](https://github.com/markup-carve/carve) markup to HTML through the
 [carve-php](https://github.com/markup-carve/carve-php) reference implementation.
+
+**[View the live demo →](https://markup-carve.github.io/symfony-carve-demo/)**
 
 Carve is a lightweight markup language for structured documents, with clear, consistent syntax.
 
@@ -44,12 +46,12 @@ Then open <http://localhost:8000>.
 | Outputs & Profiles | `/outputs-profiles` | HTML, plain-text, and Markdown targets plus feature-restriction profiles (0.1.4) |
 | Live Editor | `/form` | Type Carve in a form, submit, and see the rendered preview |
 | Safe Mode | `/safe-mode` | Raw-HTML `strip` / `escape` / `allow` and disabled, side by side, against an XSS payload |
-| Syntax | `/syntax` | A gallery of Carve constructs, including the inline literal `` !`...` ``, definition lists, footnotes, smart typography, tight vs loose lists, and the strict column-0 rule |
+| Syntax | `/syntax` | A gallery of Carve constructs, including the inline literal `` !`...` ``, definition lists, footnotes, smart typography, tight vs loose lists, and escaped block markers |
 | Diagrams | `/diagrams` | The `diagrams` config option turning fences into diagram hydration elements, with all eight presets drawn live in the browser |
 
 ## Screenshots
 
-See the **[screenshot gallery](docs/screenshots/)** for a visual tour of Includes, the live diagram gallery with all eight presets drawn live, the Twig filter, the live editor, safe mode, the syntax gallery, and the home page.
+See the [screenshot gallery](docs/screenshots/) for Includes, diagrams, Twig, the editor, safe mode, syntax, and home.
 
 
 ### Twig
@@ -148,10 +150,10 @@ markup processing.
 
 Block constructs follow the [Carve specification](https://github.com/markup-carve/carve): `# heading`,
 `- list` (tight vs loose), `> quote`, fenced code, tables, `::: note` admonitions, definition lists
-(`:: term` / `:  definition`), and footnotes (`[^ref]` with a `[^ref]:` body). Carve also applies smart
+(`:: term` / `: definition`), and footnotes (`[^ref]` with a `[^ref]:` body). Carve also applies smart
 typography - `--` becomes an en dash, `---` an em dash, `...` an ellipsis, and straight quotes become curly.
-Block markers are strict about column 0: an indented `#` or `-` stays literal text rather than opening a
-heading or list. The Syntax page renders a live example of each.
+Escape a block marker with a backslash when it should remain literal text. The Syntax page renders a live
+example of each construct.
 
 ## How it is wired
 

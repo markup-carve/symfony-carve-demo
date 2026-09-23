@@ -32,6 +32,9 @@
             "App\\": "src/"
         }
     },
+    "scripts": {
+        "export-static": "STATIC_EXPORT=true APP_ENV=prod APP_DEBUG=0 php bin/console demo:export"
+    },
     "minimum-stability": "dev",
     "prefer-stable": true
 }

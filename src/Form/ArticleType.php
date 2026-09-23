@@ -19,9 +19,11 @@ class ArticleType extends AbstractType
         $builder
             ->add('title', TextType::class, [
                 'label' => 'Title',
+                'empty_data' => '',
             ])
             ->add('body', TextareaType::class, [
                 'label' => 'Body (Carve markup)',
+                'empty_data' => '',
                 'attr' => ['rows' => 12],
             ])
             ->add('comment', TextareaType::class, [
