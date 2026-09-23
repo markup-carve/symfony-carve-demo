@@ -262,24 +262,27 @@ class DemoController extends AbstractController
         // Core constructs plus the newer / convergence features Carve is known
         // for. Each renders live through the same CarveRenderer service.
         $examples = [
-            'Headings' => "# Heading 1\n## Heading 2\n### Heading 3",
+            'Headings' => "# Heading 1\n\n## Heading 2\n\n### Heading 3",
             'Emphasis' => "/italic/\n\n*bold*\n\n_underline_\n\n=highlight=\n\n~strikethrough~",
             'Superscript & subscript' => "Braced only: E = mc{^2^} and H{,2,}O.",
             'Lists' => "- one\n- two\n  - nested\n\n. first\n. second",
             'Task list' => "- [x] done\n- [ ] todo",
             'Tight vs loose lists' => "Tight (no blank lines):\n\n- one\n- two\n\nLoose (blank lines between items wrap each in a paragraph):\n\n- one\n\n- two",
-            'Definition list' => ":: Carve\n:  A post-Markdown markup language.\n\n:: Djot\n:  The project Carve refines.",
+            'Definition list' => ":: Carve\n: A post-Markdown markup language.\n:: Djot\n: The project Carve refines.",
             'Blockquote' => "> A quote\n> spanning lines.",
             'Link & image' => "[Carve spec](https://github.com/markup-carve/carve)\n\n![Demo diagram](/diagram.svg)",
-            'Table' => "|= Lang |= Status |\n| PHP   | ready  |\n| JS    | ready  |",
+            'Table' => "|= Lang |= Status |\n| PHP | ready |\n| JS | ready |",
             'Admonition' => "::: note\nThis is a note admonition.\n:::",
             'Footnotes' => "Carve supports real footnotes.[^spec]\n\n[^spec]: Defined once, linked and back-linked automatically.",
             'Smart typography' => "Ranges use -- an en dash -- and asides use --- an em dash. Ellipsis... and \"smart quotes\" and 'single' too.",
-            'Strict column-0 markers' => "A paragraph.\n\n   # Indented three spaces, so this stays literal text, not a heading.\n\n# A real, column-0 heading",
+            'Escaped block markers' => "A paragraph.\n\n\\# This stays literal text, not a heading.\n\n# A real heading",
         ];
 
         $rendered = [];
         foreach ($examples as $label => $src) {
+            if (BaseCarveConverter::toCarve($src) !== $src."\n") {
+                throw new \LogicException("Syntax example is not canonical: {$label}");
+            }
             $rendered[$label] = ['source' => $src, 'html' => $carve->render($src)];
         }
 
@@ -291,6 +294,9 @@ class DemoController extends AbstractController
                 "A code span styles its content: `*not bold*`.\n\nAn inline literal shows the characters verbatim, with no code styling and no markup: !`*not bold*`.",
             ),
         ];
+        if (BaseCarveConverter::toCarve($inlineLiteral['source']) !== $inlineLiteral['source']."\n") {
+            throw new \LogicException('Inline literal example is not canonical.');
+        }
 
         return $this->render('demo/syntax.html.twig', [
             'examples' => $rendered,

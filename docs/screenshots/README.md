@@ -31,8 +31,8 @@ Carve source and rendered HTML side by side.
 ## Syntax gallery
 
 The new and easy-to-miss constructs (inline literal, definition lists,
-footnotes, braced subscript, tight vs loose lists, smart typography, strict
-column-0).
+footnotes, braced subscript, tight vs loose lists, smart typography, and
+escaped block markers).
 
 ![Syntax gallery](syntax.png)
 

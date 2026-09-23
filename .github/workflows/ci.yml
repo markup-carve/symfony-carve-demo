@@ -67,6 +67,11 @@ jobs:
           fi
           echo "$syntax" | grep -q '<th scope="col">Lang</th>'
           echo "$syntax" | grep -q 'alt="Demo diagram"'
+          echo "$syntax" | grep -qx ': A post-Markdown markup language.'
+          if echo "$syntax" | grep -q ':  A post-Markdown markup language.'; then
+            exit 1
+          fi
+          echo "$syntax" | grep -q '\\# This stays literal text'
           echo "$syntax" | grep -q 'li:has(> input\[type="checkbox"\])'
           echo "syntax markup ok"
 
