@@ -3,3 +3,16 @@
 {{ parts/intro.crv }}
 
 {{ parts/checklist.crv }}
+
+## Requirements
+
+{{ parts/setup.crv @region:requirements }}
+
+## Server entry point
+
+{{ parts/server.js @region:start @code:js }}
+
+## Plans
+
+{table}
+{{ parts/plans.csv @code:csv }}

@@ -77,6 +77,16 @@ jobs:
           fi
           echo "$syntax" | grep -q '\\# This stays literal text'
           echo "$syntax" | grep -q 'li:has(> input\[type="checkbox"\])'
+          echo "$syntax" | grep -q '<td>Pear, green</td>'
+          echo "$syntax" | grep -A1 '<li>Install the bundle' | grep -q '<blockquote>'
+
+          includes=$(curl -s "http://127.0.0.1:8000/includes")
+          echo "$includes" | grep -q '<li>PHP 8.2 or newer</li>'
+          echo "$includes" | grep -q '<code class="language-js">const server'
+          echo "$includes" | grep -q '<td>Enterprise, annual</td>'
+          if echo "$includes" | grep -q 'This intro stays out of the handbook'; then
+            exit 1
+          fi
           echo "syntax markup ok"
 
           echo "$diagrams" | grep -q "theme: 'neutral'"

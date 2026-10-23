@@ -276,11 +276,15 @@ class DemoController extends AbstractController
             'Footnotes' => "Carve supports real footnotes.[^spec]\n\n[^spec]: Defined once, linked and back-linked automatically.",
             'Smart typography' => "Ranges use -- an en dash -- and asides use --- an em dash. Ellipsis... and \"smart quotes\" and 'single' too.",
             'Escaped block markers' => "A paragraph.\n\n\\# This stays literal text, not a heading.\n\n# A real heading",
+            'Continuation marker' => "- Install the bundle\n+\n> Run composer from the project root.\n- Register the bundle",
+            'CSV and TSV tables' => "{table}\n```csv\nItem,Qty,Note\nApple,12,fresh\n\"Pear, green\",3,ripe\n```\n\n{table}\n```tsv\nLang\tStatus\nPHP\tready\n```",
         ];
+        // The canonical writer spells a + attachment as indentation instead.
+        $nonCanonical = ['Continuation marker' => true];
 
         $rendered = [];
         foreach ($examples as $label => $src) {
-            if (BaseCarveConverter::toCarve($src) !== $src."\n") {
+            if (!isset($nonCanonical[$label]) && BaseCarveConverter::toCarve($src) !== $src."\n") {
                 throw new \LogicException("Syntax example is not canonical: {$label}");
             }
             $rendered[$label] = ['source' => $src, 'html' => $carve->render($src)];

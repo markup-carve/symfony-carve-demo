@@ -1,0 +1,10 @@
+## Setup
+
+This intro stays out of the handbook; only the marked region is included.
+
+%% #region requirements
+- PHP 8.2 or newer
+- Composer 2
+%% #endregion requirements
+
+Anything after the region is skipped too.
