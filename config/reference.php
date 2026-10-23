@@ -725,11 +725,27 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     },
  * }
  * @psalm-type CarveConfig = array{
- *     safe_mode?: bool|Param, // Enable HTML sanitization (recommended for untrusted input). // Default: true
- *     raw_html?: "strip"|"escape"|"allow"|Param, // How raw HTML is treated when safe_mode is on. // Default: "strip"
+ *     safe_mode?: scalar|Param|null, // HTML sanitization: true, false or "strict". Keep it on for untrusted input. // Default: true
+ *     raw_html?: "strip"|"escape"|"allow"|Param, // How raw HTML is treated when safe_mode is true. // Default: "strip"
  *     profile?: null|"full"|"article"|"comment"|"minimal"|Param, // Restrict the available markup features for a rendering context. // Default: null
+ *     on_disallowed?: null|"strip"|"to_text"|"error"|Param, // What the profile does with markup it disallows: strip, to_text or error. // Default: null
+ *     mode?: "interactive"|"static"|Param, // Render mode. "static" applies graceful degradation for print, PDF and email. // Default: "interactive"
+ *     soft_break_mode?: null|"newline"|"space"|"br"|Param, // How soft breaks render: newline, space or br. Null keeps the engine default. // Default: null
+ *     xhtml?: bool|Param, // Output XHTML-compatible self-closing tags. // Default: false
+ *     source_lines?: bool|Param, // Add 1-based data-source-line attributes for editor scroll-sync. // Default: false
+ *     smart_typography?: scalar|Param|null, // Force smart typography on or off. Null keeps the engine default. // Default: null
+ *     symbols?: array<string, scalar|Param|null>,
+ *     labels?: array<string, scalar|Param|null>,
+ *     extensions?: list<mixed>,
  *     diagrams?: list<"mermaid"|"plantuml"|"d2"|"graphviz"|"wavedrom"|"vega_lite"|"chart"|"abc"|Param>,
  *     include_root?: scalar|Param|null, // Absolute containment root for opt-in file includes. String and Twig rendering remain literal. The resolver refuses a relative root rather than resolving it against the working directory. // Default: null
+ *     cache?: array{ // Cache rendered HTML in a Symfony cache pool, keyed by source and render options.
+ *         enabled?: bool|Param, // Default: false
+ *         pool?: scalar|Param|null, // Service id of a cache pool implementing Symfony\Contracts\Cache\CacheInterface. // Default: "cache.app"
+ *         ttl?: int|Param, // Lifetime in seconds. Null keeps the pool default. // Default: null
+ *         prefix?: scalar|Param|null, // Default: "carve"
+ *         version?: scalar|Param|null, // Application version mixed into cache keys. Needed when an extension holds a closure. // Default: null
+ *     },
  * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
