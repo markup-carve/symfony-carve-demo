@@ -10,8 +10,8 @@ A runnable Symfony application demonstrating the
 Carve is a lightweight markup language for structured documents, with clear, consistent syntax.
 
 > [!NOTE]
-> This demo tracks the released packages from Packagist: `markup-carve/symfony-carve` `^0.1.4` (which pulls
-> `markup-carve/carve-php` `^0.1.5`). A plain `composer install` just works.
+> This demo installs `markup-carve/symfony-carve` `^0.1.6` from Packagist, which requires
+> `markup-carve/carve-php` `^0.1.14`.
 
 ## Requirements
 
