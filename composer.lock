@@ -83,7 +83,7 @@
             "version": "dev-prep/engine-wave-0.1.x",
             "source": {
                 "type": "git",
-                "url": "git@github.com:markup-carve/symfony-carve.git",
+                "url": "https://github.com/markup-carve/symfony-carve.git",
                 "reference": "9302452bb9cd38fea48594ecd3c196b99be7246b"
             },
             "dist": {
