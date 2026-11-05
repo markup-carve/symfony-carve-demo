@@ -11,7 +11,7 @@ Carve is a lightweight markup language for structured documents, with clear, con
 
 > [!NOTE]
 > This demo installs `markup-carve/symfony-carve` `^0.1.6` from Packagist, which requires
-> `markup-carve/carve-php` `^0.1.14`.
+> `markup-carve/carve-php` `^0.1.14`. The lock file installs carve-php 0.1.16.
 
 ## Requirements
 
