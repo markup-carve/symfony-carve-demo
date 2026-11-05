@@ -16,3 +16,8 @@
 
 {table}
 {{ parts/plans.csv @code:csv }}
+
+### Seats on the larger plans
+
+{table}
+{{ parts/plans.csv @rows:3-4 @cols:"Plan,Seats" @code:csv }}

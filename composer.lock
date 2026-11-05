@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "076bfa11d935baef4249cb8076e4f324",
+    "content-hash": "3519931cc86f81f2dd3e76ec8ea977b0",
     "packages": [
         {
             "name": "markup-carve/carve-php",
-            "version": "0.1.16",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "https://github.com/markup-carve/carve-php.git",
-                "reference": "20d920713845b9310158d42fbe127e63a8f92509"
+                "reference": "f528aaca2dd277ed52c0c8843ffdd77fa87f875d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/markup-carve/carve-php/zipball/20d920713845b9310158d42fbe127e63a8f92509",
-                "reference": "20d920713845b9310158d42fbe127e63a8f92509",
+                "url": "https://api.github.com/repos/markup-carve/carve-php/zipball/f528aaca2dd277ed52c0c8843ffdd77fa87f875d",
+                "reference": "f528aaca2dd277ed52c0c8843ffdd77fa87f875d",
                 "shasum": ""
             },
             "require": {
@@ -34,6 +34,7 @@
                 "ext-dom": "Required for HTML import and HTML heading-ID conversion.",
                 "ext-intl": "Recommended for heading-ID transliteration: enables ICU romanization of non-Latin scripts (e.g. CJK, Arabic). Without it, a baked map covers Latin/Cyrillic/punctuation identically and other scripts fall back to the generated `section` id."
             },
+            "default-branch": true,
             "bin": [
                 "bin/carve"
             ],
@@ -67,7 +68,7 @@
             ],
             "support": {
                 "issues": "https://github.com/markup-carve/carve-php/issues",
-                "source": "https://github.com/markup-carve/carve-php/tree/0.1.16"
+                "source": "https://github.com/markup-carve/carve-php/tree/main"
             },
             "funding": [
                 {
@@ -75,24 +76,24 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-10-25T19:11:29+00:00"
+            "time": "2026-11-05T06:05:43+00:00"
         },
         {
             "name": "markup-carve/symfony-carve",
-            "version": "0.1.6",
+            "version": "dev-prep/engine-wave-0.1.x",
             "source": {
                 "type": "git",
-                "url": "https://github.com/markup-carve/symfony-carve.git",
-                "reference": "ba968518fc74aee86d69655933997f0038a17e9d"
+                "url": "git@github.com:markup-carve/symfony-carve.git",
+                "reference": "9302452bb9cd38fea48594ecd3c196b99be7246b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/markup-carve/symfony-carve/zipball/ba968518fc74aee86d69655933997f0038a17e9d",
-                "reference": "ba968518fc74aee86d69655933997f0038a17e9d",
+                "url": "https://api.github.com/repos/markup-carve/symfony-carve/zipball/9302452bb9cd38fea48594ecd3c196b99be7246b",
+                "reference": "9302452bb9cd38fea48594ecd3c196b99be7246b",
                 "shasum": ""
             },
             "require": {
-                "markup-carve/carve-php": "^0.1.14",
+                "markup-carve/carve-php": "dev-main as 0.1.17",
                 "php": "^8.2",
                 "psr/log": "^1.1 || ^2.0 || ^3.0",
                 "symfony/cache-contracts": "^2.5 || ^3.0",
@@ -124,7 +125,30 @@
                     "MarkupCarve\\SymfonyCarve\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "MarkupCarve\\SymfonyCarve\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "phpunit"
+                ],
+                "stan": [
+                    "phpstan analyze"
+                ],
+                "cs-check": [
+                    "phpcs --colors -p"
+                ],
+                "cs-fix": [
+                    "phpcbf --colors -p"
+                ],
+                "check": [
+                    "@cs-check",
+                    "@stan",
+                    "@test"
+                ]
+            },
             "license": [
                 "MIT"
             ],
@@ -148,13 +172,7 @@
                 "issues": "https://github.com/markup-carve/symfony-carve/issues",
                 "source": "https://github.com/markup-carve/symfony-carve"
             },
-            "funding": [
-                {
-                    "url": "https://github.com/dereuromark",
-                    "type": "github"
-                }
-            ],
-            "time": "2026-10-23T12:44:13+00:00"
+            "time": "2026-11-05T08:11:01+00:00"
         },
         {
             "name": "psr/cache",
@@ -3770,9 +3788,25 @@
         }
     ],
     "packages-dev": [],
-    "aliases": [],
+    "aliases": [
+        {
+            "package": "markup-carve/carve-php",
+            "version": "dev-main",
+            "alias": "0.1.17",
+            "alias_normalized": "0.1.17.0"
+        },
+        {
+            "package": "markup-carve/symfony-carve",
+            "version": "dev-prep/engine-wave-0.1.x",
+            "alias": "0.1.7",
+            "alias_normalized": "0.1.7.0"
+        }
+    ],
     "minimum-stability": "dev",
-    "stability-flags": {},
+    "stability-flags": {
+        "markup-carve/carve-php": 20,
+        "markup-carve/symfony-carve": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
