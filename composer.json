@@ -7,7 +7,8 @@
         "php": ">=8.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "markup-carve/symfony-carve": "^0.1.6",
+        "markup-carve/carve-php": "dev-main as 0.1.17",
+        "markup-carve/symfony-carve": "dev-prep/engine-wave-0.1.x as 0.1.7",
         "symfony/console": "7.4.*",
         "symfony/dotenv": "7.4.*",
         "symfony/form": "7.4.*",
@@ -36,5 +37,11 @@
         "export-static": "STATIC_EXPORT=true APP_ENV=prod APP_DEBUG=0 php bin/console demo:export"
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/markup-carve/symfony-carve"
+        }
+    ]
 }

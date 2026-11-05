@@ -33,6 +33,9 @@ jobs:
       - name: Lint Twig templates
         run: php bin/console lint:twig templates
 
+      - name: Print a block decision trace
+        run: php bin/console carve:trace content/main.crv | head -1 | grep -q '"trace":"carve-decision-trace"'
+
       - name: Smoke-test every route
         run: |
           php -S 127.0.0.1:8000 -t public &
@@ -79,11 +82,17 @@ jobs:
           echo "$syntax" | grep -q 'li:has(> input\[type="checkbox"\])'
           echo "$syntax" | grep -q '<td>Pear, green</td>'
           echo "$syntax" | grep -A1 '<li>Install the bundle' | grep -q '<blockquote>'
+          echo "$syntax" | grep -q '|={&lt;} Item |={~} Note |={&gt;} Qty |'
+          echo "$syntax" | grep -q '<th scope="col" style="text-align: right;">Qty</th>'
+          echo "$syntax" | grep -q '<td style="text-align: center;">fresh</td>'
+          echo "$syntax" | grep -A1 '<p>A paragraph keeps going$' | grep -q '^across the comment line.</p>'
 
           includes=$(curl -s "http://127.0.0.1:8000/includes")
           echo "$includes" | grep -q '<li>PHP 8.2 or newer</li>'
           echo "$includes" | grep -q '<code class="language-js">const server'
           echo "$includes" | grep -q '<td>Enterprise, annual</td>'
+          echo "$includes" | grep -A6 '<h3>Seats on the larger plans</h3>' | grep -q '<th scope="col">Plan</th><th scope="col">Seats</th></tr>'
+          echo "$includes" | grep -A9 '<h3>Seats on the larger plans</h3>' | grep -q '<tr><td>Team</td><td>10</td></tr>'
           if echo "$includes" | grep -q 'This intro stays out of the handbook'; then
             exit 1
           fi
