@@ -42,11 +42,11 @@ Then open <http://localhost:8000>.
 | Twig Filter | `/twig-filter` | `{{ source\|carve }}` - render a Carve string in a template |
 | Twig Function | `/twig-function` | `{{ carve(source) }}` - the function form |
 | Service | `/service` | Inject `CarveRenderer` and call `render()` from PHP |
-| Includes | `/includes` | Trusted file-backed content, a named region, source and CSV data included as code, and configuration-backed snippets |
+| Includes | `/includes` | Trusted file-backed content, a named region, source and CSV data included as code, a CSV table narrowed with `@rows` and `@cols`, and configuration-backed snippets |
 | Outputs & Profiles | `/outputs-profiles` | HTML, plain-text, and Markdown targets plus feature-restriction profiles (0.1.4) |
 | Live Editor | `/form` | Type Carve in a form, submit, and see the rendered preview |
 | Safe Mode | `/safe-mode` | Raw-HTML `strip` / `escape` / `allow` and disabled, side by side, against an XSS payload |
-| Syntax | `/syntax` | A gallery of Carve constructs, including the inline literal `` !`...` ``, definition lists, footnotes, smart typography, tight vs loose lists, escaped block markers, the `+` continuation marker, and CSV/TSV table fences |
+| Syntax | `/syntax` | A gallery of Carve constructs, including the inline literal `` !`...` ``, definition lists, footnotes, smart typography, tight vs loose lists, escaped block markers, the `+` continuation marker, braced table cell alignment, `%%` comment lines inside a paragraph, and CSV/TSV table fences |
 | Diagrams | `/diagrams` | The `diagrams` config option turning fences into diagram hydration elements, with all eight presets drawn live in the browser |
 
 ## Screenshots
@@ -152,8 +152,19 @@ Block constructs follow the [Carve specification](https://github.com/markup-carv
 `- list` (tight vs loose), `> quote`, fenced code, tables, `::: note` admonitions, definition lists
 (`:: term` / `: definition`), and footnotes (`[^ref]` with a `[^ref]:` body). Carve also applies smart
 typography - `--` becomes an en dash, `---` an em dash, `...` an ellipsis, and straight quotes become curly.
-Escape a block marker with a backslash when it should remain literal text. The Syntax page renders a live
-example of each construct.
+Escape a block marker with a backslash when it should remain literal text. Table cell alignment goes in
+braces glued to the cell marker: `|={<}`, `|={~}` and `|={>}` on header cells, `|{>}` on a body cell. A `%%`
+comment line is erased before layout, so it does not split the paragraph around it. The Syntax page renders a
+live example of each construct.
+
+## Console commands
+
+The bundle registers its commands in the demo's console. `carve:trace` prints the block decision trace of a
+file as JSON lines: a header record, then one record per block decision:
+
+```bash
+php bin/console carve:trace content/main.crv
+```
 
 ## How it is wired
 
