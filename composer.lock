@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3519931cc86f81f2dd3e76ec8ea977b0",
+    "content-hash": "e4821223e9c22bb71a98be10a984e67a",
     "packages": [
         {
             "name": "markup-carve/carve-php",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/markup-carve/carve-php.git",
-                "reference": "f528aaca2dd277ed52c0c8843ffdd77fa87f875d"
+                "reference": "83531ad57ee13280615e81f1a8f26309cb3525b8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/markup-carve/carve-php/zipball/f528aaca2dd277ed52c0c8843ffdd77fa87f875d",
-                "reference": "f528aaca2dd277ed52c0c8843ffdd77fa87f875d",
+                "url": "https://api.github.com/repos/markup-carve/carve-php/zipball/83531ad57ee13280615e81f1a8f26309cb3525b8",
+                "reference": "83531ad57ee13280615e81f1a8f26309cb3525b8",
                 "shasum": ""
             },
             "require": {
@@ -76,20 +76,20 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-11-05T06:05:43+00:00"
+            "time": "2026-11-11T11:47:39+00:00"
         },
         {
             "name": "markup-carve/symfony-carve",
-            "version": "dev-prep/engine-wave-0.1.x",
+            "version": "dev-main",
             "source": {
                 "type": "git",
-                "url": "https://github.com/markup-carve/symfony-carve.git",
-                "reference": "9302452bb9cd38fea48594ecd3c196b99be7246b"
+                "url": "git@github.com:markup-carve/symfony-carve.git",
+                "reference": "5fb34cb308f36b076c230857ae6048f50c4f0513"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/markup-carve/symfony-carve/zipball/9302452bb9cd38fea48594ecd3c196b99be7246b",
-                "reference": "9302452bb9cd38fea48594ecd3c196b99be7246b",
+                "url": "https://api.github.com/repos/markup-carve/symfony-carve/zipball/5fb34cb308f36b076c230857ae6048f50c4f0513",
+                "reference": "5fb34cb308f36b076c230857ae6048f50c4f0513",
                 "shasum": ""
             },
             "require": {
@@ -119,6 +119,7 @@
                 "symfony/validator": "To use the ValidCarve constraint",
                 "symfony/yaml": "To read YAML frontmatter through RenderedCarve::meta()"
             },
+            "default-branch": true,
             "type": "symfony-bundle",
             "autoload": {
                 "psr-4": {
@@ -172,7 +173,7 @@
                 "issues": "https://github.com/markup-carve/symfony-carve/issues",
                 "source": "https://github.com/markup-carve/symfony-carve"
             },
-            "time": "2026-11-05T08:11:01+00:00"
+            "time": "2026-11-05T18:45:25+00:00"
         },
         {
             "name": "psr/cache",
@@ -3797,7 +3798,7 @@
         },
         {
             "package": "markup-carve/symfony-carve",
-            "version": "dev-prep/engine-wave-0.1.x",
+            "version": "dev-main",
             "alias": "0.1.7",
             "alias_normalized": "0.1.7.0"
         }
