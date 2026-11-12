@@ -86,6 +86,10 @@ jobs:
           echo "$syntax" | grep -q '<th scope="col" style="text-align: right;">Qty</th>'
           echo "$syntax" | grep -q '<td style="text-align: center;">fresh</td>'
           echo "$syntax" | grep -A1 '<p>A paragraph keeps going$' | grep -q '^across the comment line.</p>'
+          echo "$syntax" | grep -q '<td rowspan="2">Apple</td>'
+          echo "$syntax" | grep -q '<td style="text-align: right;">0.90 per kilo</td>'
+          echo "$syntax" | grep -q '<td colspan="3">Three varieties in stock</td>'
+          echo "$syntax" | grep -B2 '<li>three</li>' | grep -A1 '<li>one</li>' | grep -q '<li>two</li>'
 
           includes=$(curl -s "http://127.0.0.1:8000/includes")
           echo "$includes" | grep -q '<li>PHP 8.2 or newer</li>'

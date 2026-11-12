@@ -10,8 +10,8 @@ A runnable Symfony application demonstrating the
 Carve is a lightweight markup language for structured documents, with clear, consistent syntax.
 
 > [!NOTE]
-> This demo installs `markup-carve/symfony-carve` `^0.1.6` from Packagist, which requires
-> `markup-carve/carve-php` `^0.1.14`. The lock file installs carve-php 0.1.16.
+> This demo installs `markup-carve/symfony-carve` `^0.1.7` and `markup-carve/carve-php` `^0.1.17`
+> from Packagist. The lock file installs symfony-carve 0.1.7 and carve-php 0.1.17.
 
 ## Requirements
 
@@ -46,7 +46,7 @@ Then open <http://localhost:8000>.
 | Outputs & Profiles | `/outputs-profiles` | HTML, plain-text, and Markdown targets plus feature-restriction profiles (0.1.4) |
 | Live Editor | `/form` | Type Carve in a form, submit, and see the rendered preview |
 | Safe Mode | `/safe-mode` | Raw-HTML `strip` / `escape` / `allow` and disabled, side by side, against an XSS payload |
-| Syntax | `/syntax` | A gallery of Carve constructs, including the inline literal `` !`...` ``, definition lists, footnotes, smart typography, tight vs loose lists, escaped block markers, the `+` continuation marker, braced table cell alignment, `%%` comment lines inside a paragraph, and CSV/TSV table fences |
+| Syntax | `/syntax` | A gallery of Carve constructs, including the inline literal `` !`...` ``, definition lists, footnotes, smart typography, tight vs loose lists, escaped block markers, the `+` continuation marker, braced table cell alignment, rowspan `^`, colspan `<` and `+` continuation rows in tables, `%%` comment lines inside a paragraph and between list items, and CSV/TSV table fences |
 | Diagrams | `/diagrams` | The `diagrams` config option turning fences into diagram hydration elements, with all eight presets drawn live in the browser |
 
 ## Screenshots
