@@ -156,7 +156,7 @@ class DemoController extends AbstractController
         $unformatted = $this->source('samples/unformatted.crv');
         $lintSource = $this->source('samples/lint-findings.crv');
         $imports = [];
-        foreach (['html' => 'import/page.html', 'markdown' => 'import/legacy.md', 'djot' => 'import/note.djot'] as $from => $file) {
+        foreach (['html' => 'import/page.html', 'gfm' => 'import/legacy.md', 'djot' => 'import/note.djot'] as $from => $file) {
             $input = $this->source($file);
             $imports[$from] = ['input' => $input, 'carve' => $tools->import($input, $from)];
         }

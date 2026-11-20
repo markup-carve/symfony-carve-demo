@@ -16,7 +16,7 @@ $tools->lint($source, $includeRoot, 'page.crv');
 $tools->fromHtml($html);
 $tools->fromMarkdown($markdown);
 $tools->fromDjot($djot);
-$tools->import($input, 'html');          // html, markdown or djot</code></pre>
+$tools->import($input, 'gfm');           // html, markdown or gfm (GitHub Flavored), djot</code></pre>
     </div>
 
     <div class="card">
@@ -56,7 +56,7 @@ $tools->import($input, 'html');          // html, markdown or djot</code></pre>
 
     <div class="card">
         <h2>Import</h2>
-        <p><code>import($input, $from)</code> converts HTML, Markdown or Djot into Carve. The same calls back <code>carve:convert</code>.</p>
+        <p><code>import($input, $from)</code> converts HTML, GitHub Flavored Markdown or Djot into Carve; <code>markdown</code> and <code>gfm</code> both read GFM tables, task lists and strikethrough. The same calls back <code>carve:convert</code>.</p>
         {% for from, import in imports %}
             <div class="columns">
                 <div>

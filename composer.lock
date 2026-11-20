@@ -348,12 +348,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/markup-carve/symfony-carve.git",
-                "reference": "fad0d11f5aaa85ca356c02273c4013f5595dd77c"
+                "reference": "72d750ff91bcb2dd803413cb4bc46c109f0bbbc2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/markup-carve/symfony-carve/zipball/fad0d11f5aaa85ca356c02273c4013f5595dd77c",
-                "reference": "fad0d11f5aaa85ca356c02273c4013f5595dd77c",
+                "url": "https://api.github.com/repos/markup-carve/symfony-carve/zipball/72d750ff91bcb2dd803413cb4bc46c109f0bbbc2",
+                "reference": "72d750ff91bcb2dd803413cb4bc46c109f0bbbc2",
                 "shasum": ""
             },
             "require": {
@@ -419,7 +419,8 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-11-20T03:35:50+00:00"
+            "time": "2026-11-20T05:09:37+00:00",
+            "published-time": "2026-11-20T05:09:41+00:00"
         },
         {
             "name": "nette/schema",
@@ -6408,5 +6409,5 @@
     "platform-overrides": {
         "php": "8.2.0"
     },
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.11.0"
 }
