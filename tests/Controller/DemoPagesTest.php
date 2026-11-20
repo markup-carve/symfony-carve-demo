@@ -87,6 +87,16 @@ final class DemoPagesTest extends WebTestCase
         self::assertStringContainsString('An /imported/ paragraph.', $html);
     }
 
+    public function testMarkdownImportConvertsAGitHubFlavoredTable(): void
+    {
+        $html = $this->page('tools');
+
+        self::assertStringContainsString("import(..., 'gfm')", $html);
+        self::assertStringContainsString('|= Construct |={&gt;} Carve |', $html);
+        self::assertStringContainsString('| {-Strike-} |', $html);
+        self::assertStringContainsString('- [x] Convert the file', $html);
+    }
+
     public function testConsoleRunsEveryBundleCommand(): void
     {
         $html = $this->page('console');
