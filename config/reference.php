@@ -727,12 +727,13 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  * @psalm-type CarveConfig = array{
  *     raw_html?: bool|Param, // Allow trusted raw HTML. Disabled by default. // Default: false
  *     url_policy?: list<mixed>,
- *     profile?: "full"|"article"|"comment"|"minimal"|Param, // Default: "full"
+ *     profile?: "full"|"article"|"comment"|"minimal"|Param|null, // Default: "full"
  *     mode?: "interactive"|"static"|Param, // Default: "interactive"
  *     sections?: bool|Param, // Default: true
  *     heading_ids?: "off"|"keep-case"|"lower"|"ascii"|"ascii-lower"|"ascii-strict"|"ascii-strict-lower"|Param, // Default: "keep-case"
  *     source_lines?: bool|Param, // Default: false
  *     smart_typography?: bool|Param, // Default: true
+ *     soft_break_mode?: "newline"|"space"|"br"|Param, // Default: "newline"
  *     symbols?: array<string, scalar|Param|null>,
  *     labels?: array<string, scalar|Param|null>,
  *     diagrams?: list<scalar|Param|null>,

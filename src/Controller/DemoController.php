@@ -263,6 +263,7 @@ class DemoController extends AbstractController
             'sections: false' => [['sections' => false], 'Headings without section wrappers; the id moves onto the heading.'],
             'source_lines: true' => [['source_lines' => true], 'Each block carries data-source-line.'],
             'smart_typography: false' => [['smart_typography' => false], 'Quotes, dashes and ellipsis stay as typed.'],
+            "soft_break_mode: 'br'" => [['soft_break_mode' => 'br'], 'A line break inside a paragraph renders as <br>.'],
             "mode: 'static'" => [['mode' => 'static'], 'Static output for pages without scripts.'],
             "profile: 'minimal'" => [['profile' => 'minimal'], 'The smallest profile; headings and admonitions fall back to text.'],
         ];

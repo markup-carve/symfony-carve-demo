@@ -51,7 +51,7 @@ the bundle gains a Twig filter or function, a service method, a command or a con
 | Console | `/console` | `carve:render`, `carve:fmt`, `carve:lint`, `carve:convert`, each run while the page renders |
 | Includes | `/includes` | `renderFileWithReport()`, `renderFileAs()`, `getIncludeRoot()`, include warnings, a named region, code and CSV includes narrowed with `@rows` and `@cols`, and a host `IncludeResolver` |
 | Outputs & Profiles | `/outputs-profiles` | HTML, plain text, Markdown and ANSI, `renderFileAs()`, the four profiles, `carve_text` and `carve_markdown` |
-| Render Options | `/options` | `heading_ids`, `sections`, `source_lines`, `smart_typography`, `mode`, `symbols`, `labels` and the render cache |
+| Render Options | `/options` | `heading_ids`, `sections`, `source_lines`, `smart_typography`, `soft_break_mode`, `mode`, `symbols`, `labels` and the render cache |
 | Extensions | `/extensions` | `tabs` and `wikilinks`, static mode, and the `heading_permalinks` and `autolink` shortcuts |
 | Live Editor | `/form` | A form validated by `ValidCarve` (`strict`, `lint`, `preset`, `maxLength`) with a rendered preview |
 | Safe Output | `/safe-mode` | `raw_html` and `url_policy` against an XSS payload |
@@ -111,6 +111,7 @@ carve:
     heading_ids: keep-case
     source_lines: false
     smart_typography: true
+    soft_break_mode: newline
     symbols: { carve: '🪶', tm: '™' }
     labels: {}
     include_root: '%kernel.project_dir%/content'
@@ -131,6 +132,7 @@ carve:
 | `heading_ids` | `keep-case` | `off`, `keep-case`, `lower`, `ascii`, `ascii-lower`, `ascii-strict`, `ascii-strict-lower`. |
 | `source_lines` | `false` | Add `data-source-line` attributes. |
 | `smart_typography` | `true` | Curly quotes, dashes and ellipsis. |
+| `soft_break_mode` | `newline` | How a line break inside a paragraph renders: `newline`, `space` or `br`. |
 | `symbols`, `labels` | `{}` | Engine maps for `:name:` symbols and built-in labels. |
 | `extensions` | `[]` | Carve extension objects or the shortcuts `tabs`, `wikilinks`, `heading_permalinks`, `autolink`, `mermaid`, `plantuml`. |
 | `diagrams` | `[]` | Diagram fence presets. The enum spells Vega-Lite `vega_lite`; the fence word is `vega-lite`. |

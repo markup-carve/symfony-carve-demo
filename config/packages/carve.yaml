@@ -9,6 +9,7 @@ carve:
     heading_ids: keep-case      # off | keep-case | lower | ascii | ascii-lower | ascii-strict | ascii-strict-lower
     source_lines: false         # add data-source-line attributes
     smart_typography: true      # curly quotes, dashes, ellipsis
+    soft_break_mode: newline    # newline | space | br: how a line break inside a paragraph renders
     symbols:                    # :name: symbol references
         carve: '🪶'
         tm: '™'
