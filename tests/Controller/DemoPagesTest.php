@@ -158,12 +158,20 @@ final class DemoPagesTest extends WebTestCase
         self::assertStringContainsString('<th>Both calls returned the same HTML</th><td>yes</td>', $html);
     }
 
+    public function testRenderOptionsShowTheSoftBreakMode(): void
+    {
+        $html = $this->page('options');
+
+        self::assertStringContainsString("A line break inside a paragraph\nfollows soft_break_mode.", $html);
+        self::assertStringContainsString('A line break inside a paragraph<br>', $html);
+    }
+
     public function testExtensionsRenderTabsAndWikiLinks(): void
     {
         $html = $this->page('extensions');
 
         self::assertMatchesRegularExpression('#id="extensions-on">.*?<div class="tabs" role="group"#s', $html);
-        self::assertStringContainsString('<a href="https://github.com/markup-carve/symfony-carve/wiki/getting-started">Getting Started</a>', $html);
+        self::assertStringContainsString('<a href="https://github.com/markup-carve/symfony-carve/wiki/getting-started" class="wikilink" data-wikilink="Getting Started">Getting Started</a>', $html);
         self::assertMatchesRegularExpression('#id="extensions-static">.*?<section class="tabs-panel">#s', $html);
         self::assertMatchesRegularExpression('#id="extensions-off">.*?<span class="ext-wiki">Getting Started</span>#s', $html);
         self::assertStringContainsString('<h2>Linking <a href="#Linking" class="permalink" aria-label="Permalink">#</a></h2>', $html);
