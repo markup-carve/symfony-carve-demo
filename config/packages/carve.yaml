@@ -1,10 +1,9 @@
 # symfony-carve bundle configuration.
 # See https://github.com/markup-carve/symfony-carve for all options.
 carve:
-    safe_mode: true   # sanitize HTML (recommended for untrusted input)
-    raw_html: strip   # strip | escape | allow
+    raw_html: false   # raw HTML stays off (recommended for untrusted input)
     include_root: '%kernel.project_dir%/content'
-    profile: null     # null | full | article | comment | minimal
+    profile: full     # full | article | comment | minimal
 
     # Diagram fenced-block presets to enable. A matching fence (e.g. ``` mermaid)
     # then renders as a hydration element (<pre class="mermaid">...) for a
