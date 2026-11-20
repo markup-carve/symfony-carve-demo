@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Console &middot; symfony-carve{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <h2>Console commands</h2>
+        <p class="lead">The bundle registers four commands in the application console. Each card below ran the command
+            while this page was rendered and shows its exit code and output.</p>
+        <pre><code>php bin/console carve:render &lt;file&gt; [--format=html|text|markdown|ansi] [--preset=...] [-o out]
+php bin/console carve:fmt &lt;paths&gt;... [--write] [--check] [--align-tables]
+php bin/console carve:lint &lt;paths&gt;... [--include-root=dir]
+php bin/console carve:convert &lt;file&gt; [--from=markdown|html|djot] [-o out]</code></pre>
+    </div>
+
+    {% for label, run in runs %}
+        <div class="card command-run">
+            <div class="label">$ php bin/console {{ label }}
+                <span class="{{ run.exit == 0 ? 'ok' : 'fail' }}">exit {{ run.exit }}</span></div>
+            <pre class="console-out"><code>{{ run.output is empty ? '(no output)' : run.output }}</code></pre>
+        </div>
+    {% endfor %}
+{% endblock %}

@@ -5,12 +5,15 @@
 {% block body %}
     <div class="card">
         <h2>CarveRenderer service</h2>
-        <p class="lead">Inject the renderer anywhere via autowiring and call <code>render()</code>:</p>
+        <p class="lead">Inject the renderer anywhere via autowiring. It is built from <code>config/packages/carve.yaml</code>.</p>
         <pre><code>use MarkupCarve\SymfonyCarve\CarveRenderer;
 
 public function show(CarveRenderer $carve): Response
 {
-    $html = $carve->render('# Hello *world*');
+    $html = $carve->render($source);              // HTML string
+    $result = $carve->renderResult($source);      // RenderedCarve: html, toc(), meta()
+    $tree = $carve->parse($source);               // Carve\Node tree
+    $other = $carve->withOptions(['sections' => false])->render($source);
 
     return new Response($html);
 }</code></pre>
@@ -23,9 +26,29 @@ public function show(CarveRenderer $carve): Response
         </div>
         <div class="card">
             <div class="label">render() output (raw HTML)</div>
-            <pre><code>{{ html }}</code></pre>
+            <pre id="service-html"><code>{{ html }}</code></pre>
             <div class="label" style="margin-top:15px;">Rendered in the browser</div>
             <div class="rendered">{{ html|raw }}</div>
+        </div>
+    </div>
+
+    <div class="columns">
+        <div class="card">
+            <h2><code>parse()</code></h2>
+            <p>The node tree of the source above, one node type per line.</p>
+            <pre id="service-tree"><code>{{ tree|join("\n") }}</code></pre>
+        </div>
+        <div class="card">
+            <h2><code>renderResult()</code></h2>
+            <p>Rendering <code>content/samples/article.crv</code> returns its headings and frontmatter as well as the HTML.</p>
+            <table class="facts" id="service-result">
+                <tr><th>meta('title')</th><td>{{ result.meta('title') }}</td></tr>
+                <tr><th>toc()</th><td>{% for entry in result.toc %}{{ entry.level }}: {{ entry.text }} (#{{ entry.id }})<br>{% endfor %}</td></tr>
+                <tr><th>toArray() keys</th><td>{{ result.toArray|keys|join(', ') }}</td></tr>
+            </table>
+            <h2 style="margin-top:20px;"><code>withOptions()</code></h2>
+            <p>A copy of the service with other render options, here <code>['sections' =&gt; false, 'heading_ids' =&gt; 'lower']</code>:</p>
+            <pre id="service-with-options"><code>{{ static_html }}</code></pre>
         </div>
     </div>
 {% endblock %}

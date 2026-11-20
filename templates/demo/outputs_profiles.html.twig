@@ -5,12 +5,15 @@
 {% block body %}
     <div class="card">
         <h1>Outputs &amp; Profiles</h1>
-        <p class="lead">One renderer exposes HTML, plain-text, and Markdown targets.
-            Named profiles restrict the same source consistently across every target.</p>
+        <p class="lead">One renderer exposes HTML, plain-text, Markdown and ANSI targets.
+            Named profiles restrict the same source consistently.</p>
         <pre><code>$carve->render($source);
 $carve->renderText($source);
 $carve->renderMarkdown($source);
+$carve->renderAnsi($source);
+$carve->renderFileAs($path, 'markdown');
 
+$carve->withOptions(['profile' => 'comment'])->render($source);
 $comments = new CarveRenderer(profile: 'comment');</code></pre>
     </div>
 
@@ -27,23 +30,45 @@ $comments = new CarveRenderer(profile: 'comment');</code></pre>
         </div>
         <div class="card">
             <h2>Plain text</h2>
-            <pre><code>{{ text }}</code></pre>
+            <pre id="output-text"><code>{{ text }}</code></pre>
         </div>
         <div class="card">
             <h2>Markdown</h2>
-            <pre><code>{{ markdown }}</code></pre>
+            <pre id="output-markdown"><code>{{ markdown }}</code></pre>
         </div>
         <div class="card">
-            <h2>Comment profile</h2>
-            <p>The comment profile rejects document-level headings and images.</p>
-            <div class="rendered">{{ comment_html|raw }}</div>
-            <pre><code>{{ comment_html }}</code></pre>
+            <h2>ANSI</h2>
+            <p>Terminal output; the escape codes are drawn as colors here.</p>
+            <pre class="ansi" id="output-ansi"><code>{{ ansi|raw }}</code></pre>
         </div>
     </div>
 
     <div class="card">
+        <h2><code>renderFileAs($path, 'markdown')</code></h2>
+        <pre id="output-file-markdown"><code>{{ file_markdown }}</code></pre>
+    </div>
+
+    <div class="card">
+        <h2>Profiles</h2>
+        <p><code>profile</code> accepts <code>full</code>, <code>article</code>, <code>comment</code> and <code>minimal</code>.
+            A construct a profile does not allow falls back to text.</p>
+        <div class="columns">
+            {% for name, profile_html in profiles %}
+                <div class="profile-output" id="profile-{{ name }}">
+                    <div class="label">{{ name }}</div>
+                    <div class="rendered">{{ profile_html|raw }}</div>
+                    <pre><code>{{ profile_html }}</code></pre>
+                </div>
+            {% endfor %}
+        </div>
+        <h3>Comment profile from the constructor</h3>
+        <p><code>new CarveRenderer(profile: 'comment')</code> gives the same result as the comment column above.</p>
+        <div class="rendered" id="comment-profile">{{ comment_html|raw }}</div>
+    </div>
+
+    <div class="card">
         <h2>Twig output filters</h2>
-        <p>The same non-HTML targets are available as normally escaped Twig filters.</p>
+        <p>The non-HTML targets are also available as normally escaped Twig filters.</p>
         <pre><code>{{ '{{ source|carve_text }}' }}
 {{ '{{ source|carve_markdown }}' }}</code></pre>
         <h3>carve_text</h3>

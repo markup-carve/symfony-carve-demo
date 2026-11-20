@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Render Options &middot; symfony-carve{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <h2>Render options</h2>
+        <p class="lead">Every key of the bundle configuration, and what it changes. The same keys except the maps,
+            extensions, diagrams, include root and cache can be set per call through <code>withOptions()</code> or the
+            Twig <code>carve</code> filter.</p>
+        <pre><code>carve:
+    raw_html: false
+    url_policy: []
+    profile: full
+    mode: interactive
+    sections: true
+    heading_ids: keep-case
+    source_lines: false
+    smart_typography: true
+    soft_break_mode: newline
+    symbols: { carve: '🪶', tm: '™' }
+    labels: {}
+    extensions: [tabs, { type: wikilinks, url_template: '...' }]
+    diagrams: [mermaid, plantuml, graphviz, d2, vega_lite, wavedrom, chart, abc]
+    include_root: '%kernel.project_dir%/content'
+    cache: { enabled: true, pool: cache.app, ttl: 3600, prefix: carve, version: demo-1 }</code></pre>
+        <p><code>raw_html</code> and <code>url_policy</code> are on the <a href="{{ path('safe_mode') }}">Safe Output</a> page,
+            <code>profile</code> on <a href="{{ path('outputs_profiles') }}">Outputs &amp; Profiles</a>,
+            <code>extensions</code> on <a href="{{ path('extensions') }}">Extensions</a>,
+            <code>diagrams</code> on <a href="{{ path('diagrams') }}">Diagrams</a> and
+            <code>include_root</code> on <a href="{{ path('includes') }}">Includes</a>.</p>
+        <div class="label">Carve source used below</div>
+        <pre><code>{{ source }}</code></pre>
+    </div>
+
+    {% for label, variant in variants %}
+        <div class="card option-variant">
+            <div class="label">{{ label }}</div>
+            <p>{{ variant.note }}</p>
+            <div class="columns">
+                <div class="rendered">{{ variant.html|raw }}</div>
+                <pre><code>{{ variant.html }}</code></pre>
+            </div>
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <h2><code>symbols</code> and <code>labels</code></h2>
+        <p><code>symbols</code> maps <code>:name:</code> references to text; <code>labels</code> replaces the engine's
+            built-in labels, such as admonition titles. Here <code>labels: {admonitionNote: 'Hinweis'}</code>:</p>
+        <div class="columns">
+            <div>
+                <div class="label">symbols and labels set</div>
+                <pre id="labels-output"><code>{{ labels_html }}</code></pre>
+            </div>
+            <div>
+                <div class="label">neither set</div>
+                <pre id="no-symbols-output"><code>{{ no_symbols_html }}</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2><code>cache</code></h2>
+        <p>With <code>cache.enabled</code>, rendered HTML is stored in a Symfony cache pool, keyed by the source, every
+            render setting and the engine identity. This card renders the source twice through a renderer with an
+            in-memory pool:</p>
+        <pre><code>$pool = new ArrayAdapter();
+$cached = new CarveRenderer(cache: $pool, cacheTtl: 60, cachePrefix: 'demo');
+$cached->render($source);
+$cached->render($source);   // served from the pool</code></pre>
+        <table class="facts" id="cache-facts">
+            <tr><th>Entries in the pool</th><td>{{ cache_keys|length }}</td></tr>
+            <tr><th>Keys</th><td>{% for key in cache_keys %}<code>{{ key }}</code><br>{% endfor %}</td></tr>
+            <tr><th>Both calls returned the same HTML</th><td>{{ cache_same ? 'yes' : 'no' }}</td></tr>
+        </table>
+        <p>A registered extension that holds a closure (tabs does) makes caching opt-in: set <code>cache.version</code>
+            and change it whenever the extension changes.</p>
+    </div>
+{% endblock %}

@@ -7,14 +7,16 @@
         <h2>Carve syntax gallery</h2>
         <p class="lead">
             A sampling of Carve constructs and how they render. Carve's inline markers differ from Markdown:
-            <code>/italic/</code> for italic, <code>*bold*</code> for bold, and <code>_underline_</code> for underline
-            (plus <code>=highlight=</code>, <code>~strikethrough~</code>, and braced <code>{^superscript^}</code> /
-            <code>{,subscript,}</code>).
+            <code>/italic/</code> for italic and <code>*bold*</code> for bold. Carve 0.2 writes underline, highlight and
+            strikethrough in braces: <code>{_underline_}</code>, <code>{=highlight=}</code>, <code>{~strikethrough~}</code>,
+            and superscript and subscript are braced too: <code>{^superscript^}</code> / <code>{,subscript,}</code>.
+            Headings use <code>=</code> markers.
         </p>
         <p>
             The gallery also covers Carve's newer and more deliberate behaviors: the inline literal
             <code>!`...`</code>, definition lists, footnotes, smart typography (dash runs, ellipsis, quotes),
-            tight versus loose lists, and escaped block markers.
+            tight versus loose lists, escaped block markers, and blocks inside list items (indented under the item).
+            Every source on this page lives in <code>content/syntax/</code> and is checked with <code>carve fmt --check</code> and <code>carve lint</code>.
         </p>
     </div>
 

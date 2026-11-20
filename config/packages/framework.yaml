@@ -6,3 +6,7 @@ framework:
     php_errors:
         log: true
     test: false
+
+when@test:
+    framework:
+        test: true

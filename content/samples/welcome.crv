@@ -1,0 +1,19 @@
+= Welcome to Carve
+
+This is a paragraph with /italic/, *bold*, and {_underline_} text.
+
+== Features
+
+- Clean, consistent syntax
+- [x] Task lists work
+- [ ] Even unchecked ones
+
+> Carve is a lightweight markup language for structured documents, with clear, consistent syntax.
+
+=== Code
+
+```php
+$html = Carve::render('Hello *world*');
+```
+
+Visit [the spec](https://github.com/markup-carve/carve) for the details.
