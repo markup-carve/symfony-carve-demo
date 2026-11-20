@@ -24,8 +24,9 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
 
+      # Not --strict: the 0.2 preview pins carve-php by commit, which strict mode rejects.
       - name: Validate composer.json
-        run: composer validate --strict --no-check-publish
+        run: composer validate --no-check-publish
 
       - name: Clear the cache
         run: php bin/console cache:clear
