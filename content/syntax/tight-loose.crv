@@ -1,0 +1,10 @@
+Tight (no blank lines):
+
+- one
+- two
+
+Loose (blank lines between items wrap each in a paragraph):
+
+- one
+
+- two

@@ -1,0 +1,17 @@
+= Install the bundle
+
+:::: tabs
+::: tab "Composer"
+Run `composer require markup-carve/symfony-carve:dev-next2`.
+:::
+
+::: tab "Configuration"
+Register `CarveBundle` in `config/bundles.php`.
+:::
+::::
+
+== Linking
+
+See :wiki[Getting Started] for the first steps.
+
+Bare address: https://markup-carve.github.io/carve/ and an autolink <https://github.com/markup-carve/symfony-carve>.

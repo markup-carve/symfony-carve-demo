@@ -1,0 +1,12 @@
+{table}
+```csv
+Item,Qty,Note
+Apple,12,fresh
+"Pear, green",3,ripe
+```
+
+{table}
+```tsv
+Lang	Status
+PHP	ready
+```

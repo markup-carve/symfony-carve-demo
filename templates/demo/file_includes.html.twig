@@ -1,27 +1,52 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Includes{% endblock %}
+{% block title %}Includes &middot; symfony-carve{% endblock %}
 
 {% block body %}
     <div class="card">
         <h1>Includes</h1>
-        <p>Includes can read trusted files or resolve application-provided snippets. Both paths remain explicit.</p>
+        <p>With <code>include_root</code> set, the bundle reads trusted files below that root and expands their
+            <code>{{ '{{ path }}' }}</code> include directives. String rendering never reads files.</p>
+        <pre><code>carve:
+    include_root: '%kernel.project_dir%/content'
+
+$report = $carve->renderFileWithReport($path);   // value, dependencies, warnings
+$html = $carve->renderFile($path);
+$text = $carve->renderFileAs($path, 'text');      // html, text, markdown or ansi</code></pre>
+
+        <p><code>getIncludeRoot()</code>: <code>{{ include_root }}</code></p>
         <h2>File-backed content</h2>
-        <p><code>renderFileWithReport()</code> expands content inside the configured root.</p>
+        <p><code>content/main.crv</code> includes whole files, a named region, source code and CSV data, narrowed with
+            <code>@rows</code> and <code>@cols</code>.</p>
         <pre><code>{{ file_source }}</code></pre>
         <h2>Rendered result</h2>
-        <div class="rendered">{{ file_html|raw }}</div>
+        <div class="rendered" id="includes-file">{{ file_html|raw }}</div>
         <h2>Dependencies</h2>
-        <ul>{% for dependency in file_dependencies %}<li><code>{{ dependency.path }}</code>: {{ dependency.resolved ? 'resolved' : 'missing' }}</li>{% endfor %}</ul>
-        {% if file_warnings is not empty %}<h2>Warnings</h2><ul>{% for warning in file_warnings %}<li>{{ warning.message }}</li>{% endfor %}</ul>{% endif %}
+        <ul id="includes-dependencies">{% for dependency in file_dependencies %}<li><code>{{ dependency.path }}</code>: {{ dependency.resolved ? 'resolved' : 'missing' }}</li>{% endfor %}</ul>
+        <h2><code>renderFileAs($path, 'text')</code></h2>
+        <pre id="includes-text"><code>{{ file_text }}</code></pre>
+    </div>
 
+    <div class="card">
+        <h2>Include warnings</h2>
+        <p>A missing file stays in the output as text, and the report names it. The bundle also logs each warning.</p>
+        <pre><code>{{ broken_source }}</code></pre>
+        <div class="rendered">{{ broken_html|raw }}</div>
+        <ul id="includes-broken-dependencies">{% for dependency in broken_dependencies %}<li><code>{{ dependency.path }}</code>: {{ dependency.resolved ? 'resolved' : 'missing' }}</li>{% endfor %}</ul>
+        <ul id="includes-warnings">{% for warning in broken_warnings %}<li><code>{{ warning.rule }}</code> at {{ warning.file }}:{{ warning.line }}:{{ warning.column }}: {{ warning.message }}</li>{% endfor %}</ul>
+    </div>
+
+    <div class="card">
         <h2>Configuration-backed snippets</h2>
-        <p>A custom resolver reads trusted application configuration. The same resolver seam can query a database or another content store.</p>
+        <p>A host resolver (<code>App\Carve\ConfigIncludeResolver</code>, a Carve <code>IncludeResolver</code>) reads
+            snippets from trusted application configuration. The same seam can query a database or another content store.
+            The bundle's own include path is the file resolver, so this card calls the engine directly:</p>
+        <pre><code>Carve::renderWithDiagnostics($source, ['includes' => ['resolver' => $resolver]]);</code></pre>
         <pre><code>{{ dynamic_source }}</code></pre>
         <h3>Rendered result</h3>
-        <div class="rendered">{{ dynamic_html|raw }}</div>
+        <div class="rendered" id="includes-dynamic">{{ dynamic_html|raw }}</div>
         <h3>Resolved snippets</h3>
-        <ul>{% for dependency in dynamic_dependencies %}<li><code>{{ dependency.target }}</code>: {{ dependency.resolved ? 'resolved' : 'missing' }}</li>{% endfor %}</ul>
-        {% if dynamic_warnings is not empty %}<h3>Warnings</h3><ul>{% for warning in dynamic_warnings %}<li>{{ warning.message }}</li>{% endfor %}</ul>{% endif %}
+        <ul>{% for dependency in dynamic_dependencies %}<li><code>{{ dependency.file ?? dependency.path }}</code>: {{ dependency.read ? 'resolved' : 'missing' }}</li>{% endfor %}</ul>
+        {% if dynamic_warnings is not empty %}<h3>Warnings</h3><ul>{% for warning in dynamic_warnings %}<li>{{ warning }}</li>{% endfor %}</ul>{% endif %}
     </div>
 {% endblock %}

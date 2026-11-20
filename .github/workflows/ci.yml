@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, next2]
   pull_request:
 
 # Each job declares timeout-minutes so a hung step fails fast
@@ -11,7 +11,7 @@ jobs:
   smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    name: Boot and lint
+    name: Boot, lint and test
     steps:
       - uses: actions/checkout@v7
 
@@ -27,101 +27,41 @@ jobs:
       - name: Validate composer.json
         run: composer validate --strict --no-check-publish
 
+      - name: Clear the cache
+        run: php bin/console cache:clear
+
       - name: Lint the service container
         run: php bin/console lint:container
 
       - name: Lint Twig templates
         run: php bin/console lint:twig templates
 
-      - name: Print a block decision trace
-        run: php bin/console carve:trace content/main.crv | head -1 | grep -q '"trace":"carve-decision-trace"'
+      - name: Run the page and feature tests
+        run: vendor/bin/phpunit
 
-      - name: Smoke-test every route
+      - name: Smoke-test every route through the built-in server
         run: |
           php -S 127.0.0.1:8000 -t public &
           SERVER_PID=$!
           sleep 2
           set -e
-          for route in / /twig-filter /twig-function /service /includes /outputs-profiles /form /safe-mode /syntax /diagrams; do
-            code=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:8000$route")
+          routes=$(php bin/console debug:router --format=json | php -r '
+            $pages = require "config/demo_pages.php";
+            $routes = json_decode(stream_get_contents(STDIN), true);
+            foreach (array_keys($pages) as $name) { echo $routes[$name]["path"], PHP_EOL; }')
+          for route in $routes; do
+            code=$(curl -s -o /tmp/page.html -w "%{http_code}" "http://127.0.0.1:8000$route")
             echo "$route -> $code"
             test "$code" = "200"
-            page=$(curl -s "http://127.0.0.1:8000$route")
-            echo "$page" | grep -q 'href="https://markup-carve.github.io/carve/"'
-            echo "$page" | grep -q 'href="https://github.com/markup-carve/symfony-carve-demo"'
-            echo "$page" | grep -q 'href="https://github.com/markup-carve/symfony-carve"'
+            grep -q 'href="https://markup-carve.github.io/carve/"' /tmp/page.html
           done
-
-          # The Diagrams page must emit the hydration markup for all eight presets.
-          diagrams=$(curl -s "http://127.0.0.1:8000/diagrams")
-          for marker in 'pre class="mermaid"' 'pre class="graphviz"' 'pre class="d2"' \
-                        'pre class="plantuml"' 'class="vega-lite"' 'pre class="wavedrom"' \
-                        'class="chart"' 'pre class="abc"'; do
-            echo "$diagrams" | grep -q "$marker"
-            echo "diagrams markup ok: $marker"
-          done
-
-          # The Syntax page must include the newer constructs.
-          syntax=$(curl -s "http://127.0.0.1:8000/syntax")
-          echo "$syntax" | grep -q 'Inline literal'
-          echo "$syntax" | grep -q '<dl>'
-          echo "$syntax" | grep -q 'doc-noteref'
-          echo "$syntax" | grep -qx '\. first'
-          echo "$syntax" | grep -A1 '^<ol>$' | grep -q '<li>first</li>'
-          echo "$syntax" | grep -q '|= Lang |= Status |'
-          if echo "$syntax" | grep -q '|------|--------|'; then
-            exit 1
-          fi
-          echo "$syntax" | grep -q '<th scope="col">Lang</th>'
-          echo "$syntax" | grep -q 'alt="Demo diagram"'
-          echo "$syntax" | grep -qx ': A post-Markdown markup language.'
-          if echo "$syntax" | grep -q ':  A post-Markdown markup language.'; then
-            exit 1
-          fi
-          echo "$syntax" | grep -q '\\# This stays literal text'
-          echo "$syntax" | grep -q 'li:has(> input\[type="checkbox"\])'
-          echo "$syntax" | grep -q '<td>Pear, green</td>'
-          echo "$syntax" | grep -A1 '<li>Install the bundle' | grep -q '<blockquote>'
-          echo "$syntax" | grep -q '|={&lt;} Item |={~} Note |={&gt;} Qty |'
-          echo "$syntax" | grep -q '<th scope="col" style="text-align: right;">Qty</th>'
-          echo "$syntax" | grep -q '<td style="text-align: center;">fresh</td>'
-          echo "$syntax" | grep -A1 '<p>A paragraph keeps going$' | grep -q '^across the comment line.</p>'
-          echo "$syntax" | grep -q '<td rowspan="2">Apple</td>'
-          echo "$syntax" | grep -q '<td style="text-align: right;">0.90 per kilo</td>'
-          echo "$syntax" | grep -q '<td colspan="3">Three varieties in stock</td>'
-          echo "$syntax" | grep -B2 '<li>three</li>' | grep -A1 '<li>one</li>' | grep -q '<li>two</li>'
-
-          includes=$(curl -s "http://127.0.0.1:8000/includes")
-          echo "$includes" | grep -q '<li>PHP 8.2 or newer</li>'
-          echo "$includes" | grep -q '<code class="language-js">const server'
-          echo "$includes" | grep -q '<td>Enterprise, annual</td>'
-          echo "$includes" | grep -A6 '<h3>Seats on the larger plans</h3>' | grep -q '<th scope="col">Plan</th><th scope="col">Seats</th></tr>'
-          echo "$includes" | grep -A9 '<h3>Seats on the larger plans</h3>' | grep -q '<tr><td>Team</td><td>10</td></tr>'
-          if echo "$includes" | grep -q 'This intro stays out of the handbook'; then
-            exit 1
-          fi
-          echo "syntax markup ok"
-
-          echo "$diagrams" | grep -q "theme: 'neutral'"
-          echo "$diagrams" | grep -q 'live-render > pre\[class\]'
-
-          outputs=$(curl -s "http://127.0.0.1:8000/outputs-profiles")
-          echo "$outputs" | grep -q 'Plain text'
-          echo "$outputs" | grep -q 'Markdown'
-          echo "$outputs" | grep -q 'Comment profile'
-          echo "$outputs" | grep -q 'id="twig-text-output"'
-          echo "$outputs" | grep -q 'id="twig-markdown-output"'
-          echo "$outputs" | grep -q '<p># Release notes</p>'
-          echo "output targets and profile markup ok"
 
           asset_code=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:8000/diagram.svg")
           test "$asset_code" = "200"
-          echo "embedded demo asset -> $asset_code"
 
           invalid_code=$(curl -s -o /tmp/invalid-form.html -w '%{http_code}' -X POST \
             -d 'article[title]=&article[body]=' "http://127.0.0.1:8000/form")
           test "$invalid_code" = "422"
           grep -q 'This value should not be blank' /tmp/invalid-form.html
-          echo "form validation -> $invalid_code"
 
           kill $SERVER_PID

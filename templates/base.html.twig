@@ -113,6 +113,21 @@
             .badge-safe { background: #28a745; color: #fff; }
             .badge-unsafe { background: #dc3545; color: #fff; }
             .label { font-weight: bold; color: #52606d; margin-bottom: 6px; }
+            .rendered .tabs > input { margin: 0 0.25rem 0 0.75rem; }
+            .rendered .tabs > input:first-child { margin-left: 0; }
+            .rendered .tabs > label { font-weight: 600; cursor: pointer; }
+            .rendered .tabs > .tab-panel { display: none; border-top: 1px solid #ccd3da; margin-top: 0.5rem; padding-top: 0.25rem; }
+            .rendered .tabs > input:nth-of-type(1):checked ~ .tab-panel:nth-of-type(1),
+            .rendered .tabs > input:nth-of-type(2):checked ~ .tab-panel:nth-of-type(2),
+            .rendered .tabs > input:nth-of-type(3):checked ~ .tab-panel:nth-of-type(3),
+            .rendered .tabs > input:nth-of-type(4):checked ~ .tab-panel:nth-of-type(4) { display: block; }
+            .rendered a.permalink { margin-left: 0.4rem; color: #9aa5b1; text-decoration: none; font-size: 0.8em; }
+            pre.console-out { white-space: pre; word-break: normal; }
+            .ansi { background: #111; color: #ddd; }
+            .ok { color: #1a7f37; font-weight: bold; }
+            .fail { color: #c00; font-weight: bold; }
+            table.facts { border-collapse: collapse; width: 100%; }
+            table.facts th, table.facts td { border: 1px solid #ddd; padding: 6px 10px; text-align: left; vertical-align: top; }
             .static-preview { background: #e8f0fe; border: 1px solid #7aa2e3; padding: 12px 15px; border-radius: 6px; margin-bottom: 20px; }
         </style>
     </head>
@@ -124,11 +139,16 @@
             <a href="{{ path('home') }}">Home</a>
             <a href="{{ path('twig_filter') }}">Twig Filter</a>
             <a href="{{ path('twig_function') }}">Twig Function</a>
+            <a href="{{ path('twig_tools') }}">Twig Tools</a>
             <a href="{{ path('service') }}">Service</a>
+            <a href="{{ path('tools') }}">CarveTools</a>
+            <a href="{{ path('console') }}">Console</a>
             <a href="{{ path('includes') }}">Includes</a>
             <a href="{{ path('outputs_profiles') }}">Outputs &amp; Profiles</a>
+            <a href="{{ path('options') }}">Render Options</a>
+            <a href="{{ path('extensions') }}">Extensions</a>
             <a href="{{ path('form') }}">Live Editor</a>
-            <a href="{{ path('safe_mode') }}">Safe Mode</a>
+            <a href="{{ path('safe_mode') }}">Safe Output</a>
             <a href="{{ path('syntax') }}">Syntax</a>
             <a href="{{ path('diagrams') }}">Diagrams</a>
         </nav>
