@@ -1,23 +1,23 @@
-# Handbook
+= Handbook
 
 {{ parts/intro.crv }}
 
 {{ parts/checklist.crv }}
 
-## Requirements
+== Requirements
 
 {{ parts/setup.crv @region:requirements }}
 
-## Server entry point
+== Server entry point
 
 {{ parts/server.js @region:start @code:js }}
 
-## Plans
+== Plans
 
 {table}
 {{ parts/plans.csv @code:csv }}
 
-### Seats on the larger plans
+=== Seats on the larger plans
 
 {table}
 {{ parts/plans.csv @rows:3-4 @cols:"Plan,Seats" @code:csv }}

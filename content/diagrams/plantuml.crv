@@ -1,0 +1,6 @@
+```plantuml
+@startuml
+Alice -> Bob: config option
+Bob --> Alice: hydration markup
+@enduml
+```

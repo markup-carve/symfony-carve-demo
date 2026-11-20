@@ -6,24 +6,23 @@
     <div class="card">
         <h2>Diagram fences</h2>
         <p class="lead">
-            The <code>diagrams</code> config option (added in symfony-carve 0.1.2) turns selected
-            fenced blocks into hydration elements for a client-side renderer, instead of plain code
-            blocks. All eight built-in presets are enabled in <code>config/packages/carve.yaml</code>:
+            The <code>diagrams</code> config option turns selected fenced blocks into hydration elements for a
+            client-side renderer, instead of plain code blocks. All eight presets are enabled in
+            <code>config/packages/carve.yaml</code>:
         </p>
         <pre><code>carve:
-    safe_mode: true
-    raw_html: strip
     diagrams: ['mermaid', 'plantuml', 'graphviz', 'd2', 'vega_lite', 'wavedrom', 'chart', 'abc']</code></pre>
         <p>
-            The injected <code>CarveRenderer</code> service on this page uses exactly that config, so
-            a <code>``` mermaid</code> fence becomes <code>&lt;pre class="mermaid"&gt;...&lt;/pre&gt;</code>,
-            a <code>``` vega-lite</code> fence becomes <code>&lt;div class="vega-lite"&gt;&lt;script type="application/json"&gt;...</code>,
-            and so on. The bundle only emits the markup - you supply the browser library that draws it.
-            Every card below shows the Carve source, the emitted markup, and the live drawn result.
+            The injected <code>CarveRenderer</code> service on this page uses exactly that config, so a
+            <code>```mermaid</code> fence becomes <code>&lt;pre class="mermaid" role="img" aria-label="mermaid"&gt;...&lt;/pre&gt;</code>
+            with the fence body escaped inside. Every preset emits the same shape with its own class
+            (<code>vega_lite</code> for Vega-Lite). The bundle only emits the markup; you supply the browser
+            library that draws it. Every card below shows the Carve source, the emitted markup, and the live drawn result.
         </p>
         <p class="lead">
-            <strong>Note on spelling:</strong> the config enum value is <code>vega_lite</code> (underscore),
-            while the fence word authors type is <code>vega-lite</code> (hyphen).
+            <strong>Note on spelling:</strong> the config enum value and the emitted class are <code>vega_lite</code>
+            (underscore), while the fence word authors type is <code>vega-lite</code> (hyphen). Graphviz fences are
+            written <code>```graphviz</code>.
         </p>
     </div>
 
@@ -124,19 +123,17 @@
                 }
             } catch (e) { console.error('graphviz', e); }
 
-            // Vega-Lite: JSON spec in a <script type="application/json"> -> vega-embed.
+            // Vega-Lite: JSON spec in <pre class="vega_lite"> -> vega-embed.
             try {
                 if (window.vegaEmbed) {
-                    document.querySelectorAll(scope + '.vega-lite').forEach(function (div) {
+                    document.querySelectorAll(scope + '.vega_lite').forEach(function (pre) {
                         try {
-                            var script = div.querySelector('script[type="application/json"]');
-                            if (!script) { return; }
-                            var spec = JSON.parse(script.textContent);
+                            var spec = JSON.parse(pre.textContent);
                             var target = document.createElement('div');
-                            div.appendChild(target);
+                            pre.parentNode.insertBefore(target, pre);
                             window.vegaEmbed(target, spec, { actions: false }).then(function () {
-                                script.remove();
-                            }).catch(function (e) { console.error('vega render', e); });
+                                pre.remove();
+                            }).catch(function (e) { target.remove(); console.error('vega render', e); });
                         } catch (e) { console.error('vega parse', e); }
                     });
                 }
@@ -162,18 +159,15 @@
                 }
             } catch (e) { console.error('wavedrom', e); }
 
-            // Chart.js: JSON config -> new Chart() on a fresh <canvas>.
+            // Chart.js: JSON config in <pre class="chart"> -> new Chart() on a fresh <canvas>.
             try {
                 if (window.Chart) {
-                    document.querySelectorAll(scope + '.chart').forEach(function (div) {
+                    document.querySelectorAll(scope + '.chart').forEach(function (pre) {
                         try {
-                            var script = div.querySelector('script[type="application/json"]');
-                            if (!script) { return; }
-                            var cfg = JSON.parse(script.textContent);
+                            var cfg = JSON.parse(pre.textContent);
                             var canvas = document.createElement('canvas');
-                            div.appendChild(canvas);
+                            pre.replaceWith(canvas);
                             new Chart(canvas, cfg);
-                            script.remove();
                         } catch (e) { console.error('chart render', e); }
                     });
                 }

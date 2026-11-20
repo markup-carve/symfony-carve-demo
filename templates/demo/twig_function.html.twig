@@ -6,7 +6,8 @@
     <div class="card">
         <h2>Twig Function</h2>
         <p class="lead">Render an inline Carve string with the <code>carve()</code> function:</p>
-        <pre><code>{{ '{{ carve(source) }}' }}</code></pre>
+        <pre><code>{{ '{{ carve(source) }}' }}
+{{ "{{ carve(source, {heading_ids: 'lower'}) }}" }}</code></pre>
         <p>Identical output to the filter; use whichever reads better at the call site.</p>
     </div>
 
@@ -17,7 +18,24 @@
         </div>
         <div class="card">
             <div class="label">Rendered</div>
-            <div class="rendered">{{ carve(source) }}</div>
+            <div class="rendered" id="function-output">{{ carve(source, {heading_ids: 'lower'}) }}</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2><code>carve_file()</code></h2>
+        <p class="lead">Render a file below the configured <code>include_root</code> (<code>content/</code> in this demo).
+            Relative paths resolve against that root, includes inside the file are expanded, and paths outside the root are refused.</p>
+        <pre><code>{{ "{{ carve_file('parts/checklist.crv') }}" }}</code></pre>
+        <div class="columns">
+            <div>
+                <div class="label">content/parts/checklist.crv</div>
+                <pre><code>{{ file_source }}</code></pre>
+            </div>
+            <div>
+                <div class="label">Rendered</div>
+                <div class="rendered" id="carve-file-output">{{ carve_file('parts/checklist.crv') }}</div>
+            </div>
         </div>
     </div>
 {% endblock %}

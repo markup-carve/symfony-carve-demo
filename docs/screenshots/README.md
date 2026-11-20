@@ -11,8 +11,8 @@ Overview of all demo pages.
 
 ## Includes
 
-Trusted file-backed content and application-provided snippets, with each
-directive's resolved dependency report.
+Trusted file-backed content, include warnings and application-provided
+snippets, with each directive's resolved dependency report.
 
 ![Includes](includes.png)
 
@@ -22,17 +22,17 @@ Carve source and rendered HTML side by side.
 
 ![Twig filter](twig-filter.png)
 
-## Live editor and safe mode
+## Live editor and safe output
 
-| Live editor | Safe mode |
+| Live editor | Safe output |
 |---|---|
-| ![Live editor form](form.png) | ![Safe-mode comparison](safe-mode.png) |
+| ![Live editor form](form.png) | ![Safe output comparison](safe-mode.png) |
 
 ## Syntax gallery
 
-The new and easy-to-miss constructs (inline literal, definition lists,
-footnotes, braced subscript, tight vs loose lists, smart typography, and
-escaped block markers).
+Carve 0.2 constructs (inline literal, braced spans, definition lists,
+footnotes, tight vs loose lists, smart typography, escaped block markers,
+and blocks inside list items).
 
 ![Syntax gallery](syntax.png)
 

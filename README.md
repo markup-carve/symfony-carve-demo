@@ -10,8 +10,9 @@ A runnable Symfony application demonstrating the
 Carve is a lightweight markup language for structured documents, with clear, consistent syntax.
 
 > [!NOTE]
-> This demo installs `markup-carve/symfony-carve` `^0.1.7` and `markup-carve/carve-php` `^0.1.17`
-> from Packagist. The lock file installs symfony-carve 0.1.7 and carve-php 0.1.17.
+> This branch (`next2`) previews Carve 0.2. It installs `markup-carve/symfony-carve` `dev-next2` and pins
+> `markup-carve/carve-php` to the `next2` commit `e84ca218`. Neither is a registry release. The Carve 0.1 demo
+> lives on `main`.
 
 ## Requirements
 
@@ -36,36 +37,54 @@ Then open <http://localhost:8000>.
 
 ## What the demo shows
 
+Every public feature of symfony-carve `next2` is shown on a page, and `tests/FeatureCoverageTest.php` fails when
+the bundle gains a Twig filter or function, a service method, a command or a config key that no page uses.
+
 | Page | Route | Demonstrates |
 |------|-------|--------------|
 | Home | `/` | Overview and links to every page |
-| Twig Filter | `/twig-filter` | `{{ source\|carve }}` - render a Carve string in a template |
-| Twig Function | `/twig-function` | `{{ carve(source) }}` - the function form |
-| Service | `/service` | Inject `CarveRenderer` and call `render()` from PHP |
-| Includes | `/includes` | Trusted file-backed content, a named region, source and CSV data included as code, a CSV table narrowed with `@rows` and `@cols`, and configuration-backed snippets |
-| Outputs & Profiles | `/outputs-profiles` | HTML, plain-text, and Markdown targets plus feature-restriction profiles (0.1.4) |
-| Live Editor | `/form` | Type Carve in a form, submit, and see the rendered preview |
-| Safe Mode | `/safe-mode` | Raw-HTML `strip` / `escape` / `allow` and disabled, side by side, against an XSS payload |
-| Syntax | `/syntax` | A gallery of Carve constructs, including the inline literal `` !`...` ``, definition lists, footnotes, smart typography, tight vs loose lists, escaped block markers, the `+` continuation marker, braced table cell alignment, rowspan `^`, colspan `<` and `+` continuation rows in tables, `%%` comment lines inside a paragraph and between list items, and CSV/TSV table fences |
-| Diagrams | `/diagrams` | The `diagrams` config option turning fences into diagram hydration elements, with all eight presets drawn live in the browser |
+| Twig Filter | `/twig-filter` | `{{ source\|carve }}` and per-call render options |
+| Twig Function | `/twig-function` | `{{ carve(source) }}` and `{{ carve_file('parts/checklist.crv') }}` |
+| Twig Tools | `/twig-tools` | `carve_document()` (table of contents, frontmatter `meta()`), `carve_format`, `carve_lint()` |
+| Service | `/service` | `CarveRenderer`: `render()`, `renderResult()`, `parse()`, `withOptions()` |
+| CarveTools | `/tools` | `format()`, `isFormatted()`, `lint()` with and without an include root, import from HTML, Markdown and Djot |
+| Console | `/console` | `carve:render`, `carve:fmt`, `carve:lint`, `carve:convert`, each run while the page renders |
+| Includes | `/includes` | `renderFileWithReport()`, `renderFileAs()`, `getIncludeRoot()`, include warnings, a named region, code and CSV includes narrowed with `@rows` and `@cols`, and a host `IncludeResolver` |
+| Outputs & Profiles | `/outputs-profiles` | HTML, plain text, Markdown and ANSI, `renderFileAs()`, the four profiles, `carve_text` and `carve_markdown` |
+| Render Options | `/options` | `heading_ids`, `sections`, `source_lines`, `smart_typography`, `mode`, `symbols`, `labels` and the render cache |
+| Extensions | `/extensions` | `tabs` and `wikilinks`, static mode, and the `heading_permalinks` and `autolink` shortcuts |
+| Live Editor | `/form` | A form validated by `ValidCarve` (`strict`, `lint`, `preset`, `maxLength`) with a rendered preview |
+| Safe Output | `/safe-mode` | `raw_html` and `url_policy` against an XSS payload |
+| Syntax | `/syntax` | A gallery of Carve 0.2 constructs |
+| Diagrams | `/diagrams` | The `diagrams` option turning fences into hydration elements, with all eight presets drawn live in the browser |
+
+Every Carve source the pages show lives in `content/`. `tests/ContentTest.php` checks that each one is canonical
+and lint-clean, apart from the few samples whose subject is a formatter change, a lint finding or an include warning.
 
 ## Screenshots
 
-See the [screenshot gallery](docs/screenshots/) for Includes, diagrams, Twig, the editor, safe mode, syntax, and home.
-
+See the [screenshot gallery](docs/screenshots/) for Includes, diagrams, Twig, the editor, safe output, syntax, and home.
 
 ### Twig
 
 ```twig
-{# filter #}
+{# filter, with optional per-call render options #}
 {{ article.body|carve }}
+{{ comment.body|carve({profile: 'comment'}) }}
 
 {# function #}
-{{ carve('# Inline /snippet/') }}
+{{ carve('= Inline /snippet/') }}
+
+{# a file below include_root #}
+{{ carve_file('parts/intro.crv') }}
+
+{# headings and frontmatter #}
+{% set doc = carve_document(article.body) %}
+{{ doc.meta('title') }}
 ```
 
-Output is marked safe, so Twig does not double-escape it - the renderer sanitizes input according to the
-configured safe mode first.
+HTML output is marked safe, so Twig does not double-escape it. The renderer escapes raw HTML and blanks denied
+link schemes first.
 
 ### Service
 
@@ -74,42 +93,57 @@ use MarkupCarve\SymfonyCarve\CarveRenderer;
 
 public function show(CarveRenderer $carve): Response
 {
-    return new Response($carve->render('# Hello *world*'));
+    return new Response($carve->render('= Hello *world*'));
 }
 ```
 
 ## Configuration
 
-The bundle is configured in `config/packages/carve.yaml`:
+The bundle is configured in `config/packages/carve.yaml`, which sets every key the bundle accepts:
 
 ```yaml
 carve:
-    safe_mode: true   # sanitize HTML (default)
-    raw_html: strip   # strip | escape | allow
-    # All eight presets; note the enum spells Vega-Lite `vega_lite` (underscore).
-    diagrams: ['mermaid', 'plantuml', 'graphviz', 'd2', 'vega_lite', 'wavedrom', 'chart', 'abc']   # default: []
+    raw_html: false
+    url_policy: []
+    profile: full
+    mode: interactive
+    sections: true
+    heading_ids: keep-case
+    source_lines: false
+    smart_typography: true
+    symbols: { carve: '🪶', tm: '™' }
+    labels: {}
+    include_root: '%kernel.project_dir%/content'
+    extensions:
+        - tabs
+        - { type: wikilinks, url_template: 'https://github.com/markup-carve/symfony-carve/wiki/{page}' }
+    diagrams: ['mermaid', 'plantuml', 'graphviz', 'd2', 'vega_lite', 'wavedrom', 'chart', 'abc']
+    cache: { enabled: true, pool: cache.app, ttl: 3600, prefix: carve, version: 'demo-1' }
 ```
 
-| Key         | Type     | Default | Description                                                                 |
-|-------------|----------|---------|-----------------------------------------------------------------------------|
-| `safe_mode` | bool     | `true`  | Enable HTML sanitization. Keep on for untrusted input.                      |
-| `raw_html`  | enum     | `strip` | How raw HTML is handled when `safe_mode` is on: `strip`, `escape`, `allow`. |
-| `diagrams`  | string[] | `[]`    | Diagram fenced-block presets to enable: `mermaid`, `plantuml`, `graphviz`, `d2`, `wavedrom`, `vega_lite`, `chart`, `abc`. Off by default. The enum spells Vega-Lite `vega_lite` (underscore); the fence word authors type is `vega-lite` (hyphen). |
-
-The Safe Mode page renders the same untrusted input under each setting so you can see the difference directly.
+| Key | Default | Description |
+|-----|---------|-------------|
+| `raw_html` | `false` | Pass raw HTML blocks and spans through. Keep it off for untrusted input. |
+| `url_policy` | `[]` | URL scheme policy (`allow` or `deny` lists). Empty uses the engine's secure default. |
+| `profile` | `full` | `full`, `article`, `comment` or `minimal`. |
+| `mode` | `interactive` | `interactive` or `static`. |
+| `sections` | `true` | Wrap each heading and its content in `<section>`. |
+| `heading_ids` | `keep-case` | `off`, `keep-case`, `lower`, `ascii`, `ascii-lower`, `ascii-strict`, `ascii-strict-lower`. |
+| `source_lines` | `false` | Add `data-source-line` attributes. |
+| `smart_typography` | `true` | Curly quotes, dashes and ellipsis. |
+| `symbols`, `labels` | `{}` | Engine maps for `:name:` symbols and built-in labels. |
+| `extensions` | `[]` | Carve extension objects or the shortcuts `tabs`, `wikilinks`, `heading_permalinks`, `autolink`, `mermaid`, `plantuml`. |
+| `diagrams` | `[]` | Diagram fence presets. The enum spells Vega-Lite `vega_lite`; the fence word is `vega-lite`. |
+| `include_root` | `null` | Absolute root for file includes and `carve_file()`. |
+| `cache` | off | Cache rendered HTML in a cache pool. Set `version` when an extension holds a closure. |
 
 ### Diagrams
 
-With a preset listed under `diagrams`, a matching fence renders as a hydration element for a
-client-side renderer instead of a plain code block - for example a ` ``` mermaid ` block becomes
-`<pre class="mermaid">...</pre>`, and a ` ``` vega-lite ` block becomes
-`<div class="vega-lite"><script type="application/json">...</script></div>`. The bundle only emits
-the markup; it never draws the diagram or ships a renderer, so each preset needs its own browser
-library on the page.
-
-The Diagrams page wires one renderer per type (all from public CDNs) and draws every preset live.
-Each card shows the Carve source, the emitted markup, and the drawn result. Every renderer degrades
-gracefully: if a library or server is unreachable, the diagram source stays visible as text.
+With a preset listed under `diagrams`, a matching fence renders as a hydration element for a client-side
+renderer instead of a plain code block. A ```` ```mermaid ```` fence becomes
+`<pre class="mermaid" role="img" aria-label="mermaid">...</pre>` with the fence body escaped inside; every preset
+uses the same shape with its own class (`vega_lite` for Vega-Lite). The bundle only emits the markup and ships no
+renderer, so each preset needs its own browser library on the page.
 
 | Preset | Emitted element | Browser renderer | Runtime prerequisite |
 |--------|-----------------|------------------|----------------------|
@@ -117,58 +151,64 @@ gracefully: if a library or server is unreachable, the diagram source stays visi
 | `graphviz`  | `<pre class="graphviz">`  | `@viz-js/viz` (WebAssembly)    | CDN load; then renders offline |
 | `d2`        | `<pre class="d2">`        | [Kroki](https://kroki.io) server (deflate-encoded) | CDN load + network to Kroki at render time |
 | `plantuml`  | `<pre class="plantuml">`  | [PlantUML server](https://www.plantuml.com/plantuml) via its `~h` hex scheme | network to the PlantUML server at render time |
-| `vega_lite` | `<div class="vega-lite">` | vega + vega-lite + vega-embed  | CDN load; draws client-side |
+| `vega_lite` | `<pre class="vega_lite">` | vega + vega-lite + vega-embed  | CDN load; draws client-side |
 | `wavedrom`  | `<pre class="wavedrom">`  | wavedrom + default skin        | CDN load; draws client-side |
-| `chart`     | `<div class="chart">`     | chart.js (onto a `<canvas>`)   | CDN load; draws client-side |
+| `chart`     | `<pre class="chart">`     | chart.js (onto a `<canvas>`)   | CDN load; draws client-side |
 | `abc`       | `<pre class="abc">`       | abcjs                          | CDN load; draws client-side |
 
-D2 and PlantUML have no small in-browser build, so they are drawn through public servers (Kroki and
-the PlantUML server). Those servers receive your diagram source, so self-host them for sensitive
-content. Every other preset draws entirely client-side once its library has loaded from the CDN.
-
-The Diagrams page also shows the same fence with the option off (plain code block) and on (hydration
-element) side by side.
+D2 and PlantUML have no small in-browser build, so they are drawn through public servers (Kroki and the PlantUML
+server). Those servers receive your diagram source, so self-host them for sensitive content. If a library or
+server is unreachable, the diagram source stays visible as text.
 
 ## Carve syntax cheat sheet
 
-Carve's inline markers differ from Markdown - this is the most common surprise:
+Carve's inline markers differ from Markdown. Carve 0.2 writes the rarer spans in braces:
 
 | Markup            | Renders as           | HTML        |
 |-------------------|----------------------|-------------|
 | `/italic/`        | italic               | `<em>`      |
 | `*bold*`          | bold                 | `<strong>`  |
-| `_underline_`     | underline            | `<u>`       |
-| `=highlight=`     | highlighted          | `<mark>`    |
-| `~strikethrough~` | struck through       | `<s>`       |
+| `{_underline_}`   | underline            | `<u>`       |
+| `{=highlight=}`   | highlighted          | `<mark>`    |
+| `{~strikethrough~}` | struck through     | `<s>`       |
 | `{^superscript^}` | superscript          | `<sup>`     |
 | `{,subscript,}`   | subscript            | `<sub>`     |
 | `` !`literal` ``  | verbatim characters, no code styling | plain text |
 
-Sup/sub are braced only (`{^x^}` / `{,x,}`) - Carve does not treat bare `^`/`,` as markers. The inline
-literal `` !`...` `` shows the characters between the backticks exactly, with no code styling and no further
-markup processing.
+Headings use `=` markers (`= Title`, `== Section`). Blocks inside a list item are indented under the item after a
+blank line. Table cell alignment goes in braces glued to the cell marker: `|={<}`, `|={~}` and `|={>}` on header
+cells, `|{>}` on a body cell. A `%%` comment line is erased before layout, so it does not split the paragraph
+around it. The Syntax page renders a live example of each construct.
 
-Block constructs follow the [Carve specification](https://github.com/markup-carve/carve): `# heading`,
-`- list` (tight vs loose), `> quote`, fenced code, tables, `::: note` admonitions, definition lists
-(`:: term` / `: definition`), and footnotes (`[^ref]` with a `[^ref]:` body). Carve also applies smart
-typography - `--` becomes an en dash, `---` an em dash, `...` an ellipsis, and straight quotes become curly.
-Escape a block marker with a backslash when it should remain literal text. Table cell alignment goes in
-braces glued to the cell marker: `|={<}`, `|={~}` and `|={>}` on header cells, `|{>}` on a body cell. A `%%`
-comment line is erased before layout, so it does not split the paragraph around it. The Syntax page renders a
-live example of each construct.
+To move a 0.1 document to 0.2, run the carve-js `carve upgrade` tool, review each rewrite, then `carve fmt` and
+`carve lint`.
 
 ## Console commands
 
-The bundle registers its commands in the demo's console. `carve:trace` prints the block decision trace of a
-file as JSON lines: a header record, then one record per block decision:
+The bundle registers four commands in the demo's console:
 
 ```bash
-php bin/console carve:trace content/main.crv
+php bin/console carve:render content/samples/release-notes.crv --format=markdown
+php bin/console carve:fmt --check content/syntax
+php bin/console carve:lint content/broken.crv --include-root=content
+php bin/console carve:convert content/import/legacy.md
 ```
+
+The Console page runs each of them and shows the output.
+
+## Tests
+
+```bash
+composer test
+```
+
+The suite requests every page, posts the form with valid and invalid input, checks the feature coverage, and
+checks every Carve source in `content/`.
 
 ## How it is wired
 
 - `config/bundles.php` registers `MarkupCarve\SymfonyCarve\CarveBundle`.
 - `config/packages/carve.yaml` holds the bundle configuration.
-- `src/Controller/DemoController.php` autowires `CarveRenderer` and renders each page.
+- `src/Controller/DemoController.php` autowires `CarveRenderer` and `CarveTools` and renders each page.
+- `src/Carve/ConfigIncludeResolver.php` is a Carve `IncludeResolver` backed by configuration.
 - No database: the Live Editor uses a plain, non-persisted `Article` object.

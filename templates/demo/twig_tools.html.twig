@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Twig Tools &middot; symfony-carve{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <h2>Twig tools</h2>
+        <p class="lead">Besides rendering, the Twig extension exposes the document metadata, the formatter and the linter.</p>
+        <pre><code>{{ '{% set doc = carve_document(article) %}' }}
+{{ '{{ doc.html|raw }}  {{ doc.toc }}  {{ doc.meta(\'title\') }}' }}
+{{ '{{ source|carve_format }}  {{ source|carve_format(true) }}' }}
+{{ '{% for finding in carve_lint(source) %}...{% endfor %}' }}</code></pre>
+    </div>
+
+    {% set doc = carve_document(article) %}
+    <div class="card">
+        <h2><code>carve_document()</code></h2>
+        <p><code>carve_document()</code> returns a <code>RenderedCarve</code> with the HTML, the headings for a table of
+            contents, and the frontmatter. <code>meta()</code> reads YAML frontmatter through symfony/yaml.</p>
+        <div class="columns">
+            <div>
+                <div class="label">Carve source</div>
+                <pre><code>{{ article }}</code></pre>
+            </div>
+            <div>
+                <div class="label">Frontmatter</div>
+                <table class="facts" id="document-meta">
+                    <tr><th>hasFrontmatter()</th><td>{{ doc.hasFrontmatter ? 'yes' : 'no' }}</td></tr>
+                    <tr><th>meta('title')</th><td>{{ doc.meta('title') }}</td></tr>
+                    <tr><th>meta('author')</th><td>{{ doc.meta('author') }}</td></tr>
+                    <tr><th>meta('tags')</th><td>{{ doc.meta('tags')|join(', ') }}</td></tr>
+                    <tr><th>meta('missing', 'n/a')</th><td>{{ doc.meta('missing', 'n/a') }}</td></tr>
+                </table>
+                <div class="label" style="margin-top:15px;">Table of contents from <code>doc.toc</code></div>
+                <div class="rendered" id="document-toc" role="navigation" aria-label="Table of contents">
+                    <ul>
+                        {% for entry in doc.toc %}
+                            <li style="margin-left: {{ (entry.level - 1) * 1.2 }}em"><a href="#{{ entry.id }}">{{ entry.text }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="label" style="margin-top:15px;">doc.html</div>
+        <div class="rendered">{{ doc.html|raw }}</div>
+    </div>
+
+    <div class="card">
+        <h2><code>carve_format</code></h2>
+        <p>The formatter rewrites any accepted spelling into canonical Carve. Pass <code>true</code> to align table columns.</p>
+        <div class="columns">
+            <div>
+                <div class="label">Input</div>
+                <pre><code>{{ unformatted }}</code></pre>
+            </div>
+            <div>
+                <div class="label">{{ '{{ source|carve_format }}' }}</div>
+                <pre id="format-output"><code>{{ unformatted|carve_format }}</code></pre>
+                <div class="label">{{ '{{ source|carve_format(true) }}' }}</div>
+                <pre id="format-aligned"><code>{{ unformatted|carve_format(true) }}</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2><code>carve_lint()</code></h2>
+        <p>Lint findings point at constructs that probably do not mean what the author intended.</p>
+        <div class="label">Input</div>
+        <pre><code>{{ lint_source }}</code></pre>
+        <table class="facts" id="lint-findings">
+            <tr><th>Line:column</th><th>Rule</th><th>Message</th></tr>
+            {% for finding in carve_lint(lint_source) %}
+                <tr><td>{{ finding.line }}:{{ finding.column }}</td><td><code>{{ finding.rule }}</code></td><td>{{ finding.message }}</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}

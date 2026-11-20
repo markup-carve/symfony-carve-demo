@@ -22,12 +22,12 @@ class ArticleType extends AbstractType
                 'empty_data' => '',
             ])
             ->add('body', TextareaType::class, [
-                'label' => 'Body (Carve markup)',
+                'label' => 'Body (Carve markup, strict and lint-clean)',
                 'empty_data' => '',
                 'attr' => ['rows' => 12],
             ])
             ->add('comment', TextareaType::class, [
-                'label' => 'Comment (optional, Carve markup)',
+                'label' => 'Comment (optional, comment profile, at most 500 characters)',
                 'required' => false,
                 'attr' => ['rows' => 5],
             ])

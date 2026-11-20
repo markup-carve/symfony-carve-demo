@@ -1,0 +1,15 @@
+```vega-lite
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "data": {"values": [
+    {"engine": "PHP", "tier": 3},
+    {"engine": "JS", "tier": 3},
+    {"engine": "Rust", "tier": 3}
+  ]},
+  "mark": "bar",
+  "encoding": {
+    "x": {"field": "engine", "type": "nominal"},
+    "y": {"field": "tier", "type": "quantitative"}
+  }
+}
+```

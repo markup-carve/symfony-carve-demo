@@ -5,3 +5,4 @@
 .env.local
 .phpunit.result.cache
 _*
+/.phpunit.cache/
