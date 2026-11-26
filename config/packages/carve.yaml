@@ -1,4 +1,4 @@
-# symfony-carve bundle configuration (Carve 0.2, symfony-carve next2).
+# symfony-carve bundle configuration (Carve 0.2, symfony-carve main).
 # Every key the bundle accepts is listed; the "Render options" page shows what each one does.
 carve:
     raw_html: false             # raw HTML blocks and spans are escaped; true is for trusted input only

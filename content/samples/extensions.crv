@@ -2,7 +2,7 @@
 
 :::: tabs
 ::: tab "Composer"
-Run `composer require markup-carve/symfony-carve:dev-next2`.
+Run `composer require markup-carve/symfony-carve:dev-main`.
 :::
 
 ::: tab "Configuration"
