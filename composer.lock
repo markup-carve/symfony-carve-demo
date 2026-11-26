@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "aa0324d654e3004248b63a87b6179387",
+    "content-hash": "322a5daff4cf2264b4baf828e1a91021",
     "packages": [
         {
             "name": "dflydev/dot-access-data",
@@ -272,7 +272,7 @@
         },
         {
             "name": "markup-carve/carve-php",
-            "version": "dev-next2",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "https://github.com/markup-carve/carve-php.git",
@@ -285,20 +285,23 @@
                 "shasum": ""
             },
             "require": {
-                "league/commonmark": "^2.9.2",
                 "php": "^8.2",
-                "php-collective/djot": "^0.1.35",
                 "symfony/polyfill-intl-normalizer": "^1.27"
             },
             "require-dev": {
+                "league/commonmark": "^2.9.2",
                 "php-collective/code-sniffer": "^0.6.8",
+                "php-collective/djot": "^0.1.35",
                 "phpstan/phpstan": "^2.1.32",
                 "phpunit/phpunit": "^11.0 || ^12.0 || ^13.0"
             },
             "suggest": {
                 "ext-dom": "Required for HTML import and HTML heading-ID conversion.",
-                "ext-intl": "Recommended for heading-ID transliteration: enables ICU romanization of non-Latin scripts (e.g. CJK, Arabic). Without it, a baked map covers Latin/Cyrillic/punctuation identically and other scripts fall back to the generated `section` id."
+                "ext-intl": "Recommended for heading-ID transliteration: enables ICU romanization of non-Latin scripts (e.g. CJK, Arabic). Without it, a baked map covers Latin/Cyrillic/punctuation identically and other scripts fall back to the generated `section` id.",
+                "league/commonmark": "Required for Markdown and GFM import (^2.9.2).",
+                "php-collective/djot": "Required for Djot import (^0.1.35)."
             },
+            "default-branch": true,
             "bin": [
                 "bin/carve"
             ],
@@ -332,7 +335,7 @@
             ],
             "support": {
                 "issues": "https://github.com/markup-carve/carve-php/issues",
-                "source": "https://github.com/markup-carve/carve-php/tree/next2"
+                "source": "https://github.com/markup-carve/carve-php/tree/main"
             },
             "funding": [
                 {
@@ -340,26 +343,28 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-11-20T10:04:01+00:00",
-            "published-time": "2026-11-20T10:04:06+00:00"
+            "time": "2026-11-26T22:53:17+00:00",
+            "published-time": "2026-11-26T22:53:23+00:00"
         },
         {
             "name": "markup-carve/symfony-carve",
-            "version": "dev-next2",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "https://github.com/markup-carve/symfony-carve.git",
-                "reference": "8aefab79caa87511bdf267edf818e8d80a08741f"
+                "reference": "d385c3f1bc3875614129bd99223e721f161f789d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/markup-carve/symfony-carve/zipball/8aefab79caa87511bdf267edf818e8d80a08741f",
-                "reference": "8aefab79caa87511bdf267edf818e8d80a08741f",
+                "url": "https://api.github.com/repos/markup-carve/symfony-carve/zipball/d385c3f1bc3875614129bd99223e721f161f789d",
+                "reference": "d385c3f1bc3875614129bd99223e721f161f789d",
                 "shasum": ""
             },
             "require": {
-                "markup-carve/carve-php": "dev-next2#6ceebc52181efc1f5dfe6f5e7964b75c43f13a90",
+                "league/commonmark": "^2.9.2",
+                "markup-carve/carve-php": "dev-main#6ceebc52181efc1f5dfe6f5e7964b75c43f13a90",
                 "php": "^8.2",
+                "php-collective/djot": "^0.1.35",
                 "psr/log": "^1.1 || ^2.0 || ^3.0",
                 "symfony/cache-contracts": "^2.5 || ^3.0",
                 "symfony/config": "^6.4 || ^7.0",
@@ -384,6 +389,7 @@
                 "symfony/validator": "To use the ValidCarve constraint",
                 "symfony/yaml": "To read YAML frontmatter through RenderedCarve::meta()"
             },
+            "default-branch": true,
             "type": "symfony-bundle",
             "autoload": {
                 "psr-4": {
@@ -420,8 +426,8 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-11-20T10:51:51+00:00",
-            "published-time": "2026-11-20T10:51:55+00:00"
+            "time": "2026-11-26T22:36:26+00:00",
+            "published-time": "2026-11-26T22:36:31+00:00"
         },
         {
             "name": "nette/schema",

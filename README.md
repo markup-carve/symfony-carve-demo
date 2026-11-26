@@ -10,9 +10,9 @@ A runnable Symfony application demonstrating the
 Carve is a lightweight markup language for structured documents, with clear, consistent syntax.
 
 > [!NOTE]
-> This branch (`next2`) previews Carve 0.2. It installs `markup-carve/symfony-carve` `dev-next2` and pins
-> `markup-carve/carve-php` to the `next2` commit `e84ca218`. Neither is a registry release. The Carve 0.1 demo
-> lives on `main`.
+> This branch (`main`) previews Carve 0.2. It installs `markup-carve/symfony-carve` `dev-main` and pins
+> `markup-carve/carve-php` to the `main` commit `6ceebc52`. Neither is a registry release. The Carve 0.1 demo
+> lives on `0.1`.
 
 ## Requirements
 
@@ -37,7 +37,7 @@ Then open <http://localhost:8000>.
 
 ## What the demo shows
 
-Every public feature of symfony-carve `next2` is shown on a page, and `tests/FeatureCoverageTest.php` fails when
+Every public feature of symfony-carve `main` is shown on a page, and `tests/FeatureCoverageTest.php` fails when
 the bundle gains a Twig filter or function, a service method, a command or a config key that no page uses.
 
 | Page | Route | Demonstrates |
