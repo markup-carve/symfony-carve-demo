@@ -1,0 +1,6 @@
+```mermaid
+flowchart LR
+    A[Write Carve] --> B{diagrams enabled?}
+    B -->|yes| C[hydration element]
+    B -->|no| D[plain code block]
+```

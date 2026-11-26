@@ -1,0 +1,6 @@
+|= Fruit |= Variety |={>} Price |
+| Apple | Gala | 1.20 |
+| ^ | Fuji | 1.40 |
+| Pear | Conference | 0.90 |
++ | | per kilo |
+| Three varieties in stock | < | < |

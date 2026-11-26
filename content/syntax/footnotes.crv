@@ -1,0 +1,3 @@
+Carve supports real footnotes.[^spec]
+
+[^spec]: Defined once, linked and back-linked automatically.

@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}CarveTools &middot; symfony-carve{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <h2>CarveTools service</h2>
+        <p class="lead"><code>CarveTools</code> wraps the Carve formatter, linter and importers. Inject it like any service.</p>
+        <pre><code>use MarkupCarve\SymfonyCarve\CarveTools;
+
+$tools->format($source);                 // canonical Carve
+$tools->format($source, alignTables: true);
+$tools->isFormatted($source);            // bool
+$tools->lint($source);                   // list of LintFinding
+$tools->lint($source, $includeRoot, 'page.crv');
+$tools->fromHtml($html);
+$tools->fromMarkdown($markdown);
+$tools->fromDjot($djot);
+$tools->import($input, 'gfm');           // html, markdown or gfm (GitHub Flavored), djot</code></pre>
+    </div>
+
+    <div class="card">
+        <h2>format() and isFormatted()</h2>
+        <div class="columns">
+            <div>
+                <div class="label">Input (isFormatted: <span id="is-formatted-before">{{ is_formatted_before ? 'true' : 'false' }}</span>)</div>
+                <pre><code>{{ unformatted }}</code></pre>
+            </div>
+            <div>
+                <div class="label">format() (isFormatted: <span id="is-formatted-after">{{ is_formatted_after ? 'true' : 'false' }}</span>)</div>
+                <pre id="tools-format"><code>{{ formatted }}</code></pre>
+                <div class="label">format(alignTables: true)</div>
+                <pre id="tools-format-aligned"><code>{{ aligned }}</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>lint()</h2>
+        <div class="label">Input</div>
+        <pre><code>{{ lint_source }}</code></pre>
+        <table class="facts" id="tools-lint">
+            <tr><th>Line:column</th><th>Rule</th><th>Message</th></tr>
+            {% for finding in findings %}
+                <tr><td>{{ finding.line }}:{{ finding.column }}</td><td><code>{{ finding.rule }}</code></td><td>{{ finding.message }}</td></tr>
+            {% endfor %}
+        </table>
+        <p>With an include root, lint also follows include directives. <code>lint(source, 'content', 'broken.crv')</code>:</p>
+        <table class="facts" id="tools-lint-includes">
+            <tr><th>Line:column</th><th>Rule</th><th>Message</th></tr>
+            {% for finding in include_findings %}
+                <tr><td>{{ finding.line }}:{{ finding.column }}</td><td><code>{{ finding.rule }}</code></td><td>{{ finding.message }}</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>Import</h2>
+        <p><code>import($input, $from)</code> converts HTML, GitHub Flavored Markdown or Djot into Carve; <code>markdown</code> and <code>gfm</code> both read GFM tables, task lists and strikethrough. The same calls back <code>carve:convert</code>.</p>
+        {% for from, import in imports %}
+            <div class="columns">
+                <div>
+                    <div class="label">{{ from }} input</div>
+                    <pre><code>{{ import.input }}</code></pre>
+                </div>
+                <div>
+                    <div class="label">import(..., '{{ from }}')</div>
+                    <pre id="import-{{ from }}"><code>{{ import.carve }}</code></pre>
+                </div>
+            </div>
+        {% endfor %}
+        <table class="facts" id="tools-from">
+            <tr><th>fromHtml('&lt;h2&gt;Hi&lt;/h2&gt;&lt;p&gt;An &lt;em&gt;imported&lt;/em&gt; paragraph.&lt;/p&gt;')</th><td><pre><code>{{ from_html }}</code></pre></td></tr>
+            <tr><th>fromMarkdown("## Hi\n\nA **Markdown** paragraph.")</th><td><pre><code>{{ from_markdown }}</code></pre></td></tr>
+            <tr><th>fromDjot("## Hi\n\nA _Djot_ paragraph.")</th><td><pre><code>{{ from_djot }}</code></pre></td></tr>
+        </table>
+    </div>
+{% endblock %}

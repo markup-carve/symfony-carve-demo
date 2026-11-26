@@ -1,0 +1,10 @@
+```chart
+{
+  "type": "bar",
+  "data": {
+    "labels": ["PHP", "JS", "Rust"],
+    "datasets": [{ "label": "Carve engines", "data": [3, 3, 3] }]
+  },
+  "options": { "responsive": true }
+}
+```

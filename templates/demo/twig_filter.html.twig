@@ -5,9 +5,13 @@
 {% block body %}
     <div class="card">
         <h2>Twig Filter</h2>
-        <p class="lead">Pipe any Carve string through the <code>carve</code> filter:</p>
-        <pre><code>{{ '{{ source|carve }}' }}</code></pre>
-        <p>Output is marked safe, so Twig does not double-escape it (the renderer already sanitizes per the configured safe mode).</p>
+        <p class="lead">Render a Carve string in a template with the <code>carve</code> filter. The output is marked safe;
+            the renderer already escapes raw HTML and blanks denied URLs.</p>
+        <pre><code>{{ '{{ source|carve }}' }}
+{{ "{{ source|carve({profile: 'comment', sections: false}) }}" }}</code></pre>
+        <p>The optional argument takes the per-call render options: <code>raw_html</code>, <code>url_policy</code>,
+            <code>profile</code> (or <code>preset</code>), <code>mode</code>, <code>sections</code>, <code>heading_ids</code>,
+            <code>source_lines</code> and <code>smart_typography</code>.</p>
     </div>
 
     <div class="columns">
@@ -16,8 +20,14 @@
             <pre><code>{{ source }}</code></pre>
         </div>
         <div class="card">
-            <div class="label">Rendered</div>
-            <div class="rendered">{{ source|carve }}</div>
+            <div class="label">{{ '{{ source|carve }}' }}</div>
+            <div class="rendered" id="filter-default">{{ source|carve }}</div>
         </div>
+    </div>
+
+    <div class="card">
+        <div class="label">{{ "{{ source|carve({profile: 'comment', sections: false}) }}" }}</div>
+        <p>The comment profile keeps headings as text, so user comments cannot add document structure.</p>
+        <div class="rendered" id="filter-options">{{ source|carve({profile: 'comment', sections: false}) }}</div>
     </div>
 {% endblock %}

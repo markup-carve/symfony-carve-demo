@@ -5,7 +5,14 @@
 {% block body %}
     <div class="card">
         <h2>Live editor</h2>
-        <p class="lead">Type Carve markup, submit, and see it rendered. Input is sanitized by the configured safe mode.</p>
+        <p class="lead">Type Carve markup, submit, and see it rendered. Raw HTML is escaped by default.</p>
+        <p>The <code>ValidCarve</code> constraint checks both fields before rendering:</p>
+        <pre><code>#[ValidCarve(strict: true, lint: true, maxLength: 5000)]
+private string $body;
+
+#[ValidCarve(preset: 'comment', maxLength: 500)]
+private ?string $comment;</code></pre>
+        <p>Try <code>**bold**</code> in the body (a lint finding) or a heading in the comment (not allowed by the comment profile).</p>
 
         {% if static_export %}
             <p class="warning">This form works only in a local checkout. Clone the repository and run <code>composer install &amp;&amp; symfony server:start</code>.</p>
@@ -26,6 +33,7 @@
             <div>
                 {{ form_label(form.comment) }}
                 {{ form_widget(form.comment) }}
+                <div class="error">{{ form_errors(form.comment) }}</div>
             </div>
             {{ form_widget(form.render) }}
             </fieldset>

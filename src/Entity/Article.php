@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use MarkupCarve\SymfonyCarve\Validator\ValidCarve;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -15,8 +16,10 @@ class Article
     private string $title = '';
 
     #[Assert\NotBlank]
+    #[ValidCarve(strict: true, lint: true, maxLength: 5000)]
     private string $body = '';
 
+    #[ValidCarve(preset: 'comment', maxLength: 500)]
     private ?string $comment = null;
 
     public function getTitle(): string

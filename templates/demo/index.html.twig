@@ -8,23 +8,29 @@
         <p class="lead">
             A Symfony app demonstrating the
             <a href="https://github.com/markup-carve/symfony-carve">symfony-carve</a> bundle, which renders
-            <a href="https://github.com/markup-carve/carve">Carve</a> markup to HTML through
+            <a href="https://github.com/markup-carve/carve">Carve</a> 0.2 markup to HTML through
             <a href="https://github.com/markup-carve/carve-php">carve-php</a>.
         </p>
-        <p>Carve is a lightweight markup language for structured documents, with clear, consistent syntax.</p>
+        <p>Carve is a lightweight markup language for structured documents, with clear, consistent syntax.
+            This preview runs on the <code>next2</code> branches of symfony-carve and carve-php.</p>
     </div>
 
     <div class="card">
         <h2>What this demo covers</h2>
         <ul>
-            <li><a href="{{ path('twig_filter') }}">Twig Filter</a> - <code>{{ '{{ source|carve }}' }}</code></li>
-            <li><a href="{{ path('twig_function') }}">Twig Function</a> - <code>{{ '{{ carve(source) }}' }}</code></li>
-            <li><a href="{{ path('service') }}">Service</a> - inject <code>CarveRenderer</code> and call <code>render()</code></li>
-            <li><a href="{{ path('includes') }}">Includes</a> - render trusted files or application-provided snippets</li>
-            <li><a href="{{ path('outputs_profiles') }}">Outputs &amp; Profiles</a> - HTML, plain text, Markdown, and feature-restriction profiles</li>
-            <li><a href="{{ path('form') }}">Live Editor</a> - type Carve, submit, see rendered HTML</li>
-            <li><a href="{{ path('safe_mode') }}">Safe Mode</a> - raw-HTML strip / escape / allow, side by side</li>
-            <li><a href="{{ path('syntax') }}">Syntax</a> - a gallery of Carve constructs</li>
+            <li><a href="{{ path('twig_filter') }}">Twig Filter</a> - <code>{{ '{{ source|carve }}' }}</code>, with per-call render options</li>
+            <li><a href="{{ path('twig_function') }}">Twig Function</a> - <code>{{ '{{ carve(source) }}' }}</code> and <code>{{ '{{ carve_file(path) }}' }}</code></li>
+            <li><a href="{{ path('twig_tools') }}">Twig Tools</a> - <code>carve_document()</code> (table of contents, frontmatter), <code>carve_format</code> and <code>carve_lint()</code></li>
+            <li><a href="{{ path('service') }}">Service</a> - <code>CarveRenderer</code>: <code>render()</code>, <code>renderResult()</code>, <code>parse()</code> and <code>withOptions()</code></li>
+            <li><a href="{{ path('tools') }}">CarveTools</a> - format, lint, and import from HTML, Markdown and Djot</li>
+            <li><a href="{{ path('console') }}">Console</a> - <code>carve:render</code>, <code>carve:fmt</code>, <code>carve:lint</code> and <code>carve:convert</code></li>
+            <li><a href="{{ path('includes') }}">Includes</a> - trusted file includes with a dependency report, warnings, and a host resolver</li>
+            <li><a href="{{ path('outputs_profiles') }}">Outputs &amp; Profiles</a> - HTML, plain text, Markdown and ANSI, and the four profiles</li>
+            <li><a href="{{ path('options') }}">Render Options</a> - every render setting, symbols, labels and the render cache</li>
+            <li><a href="{{ path('extensions') }}">Extensions</a> - tabs and wiki links</li>
+            <li><a href="{{ path('form') }}">Live Editor</a> - type Carve, submit, see rendered HTML; validated by <code>ValidCarve</code></li>
+            <li><a href="{{ path('safe_mode') }}">Safe Output</a> - <code>raw_html</code> and <code>url_policy</code> against an XSS payload</li>
+            <li><a href="{{ path('syntax') }}">Syntax</a> - a gallery of Carve 0.2 constructs</li>
             <li><a href="{{ path('diagrams') }}">Diagrams</a> - the <code>diagrams</code> config option turns fences into diagram hydration elements</li>
         </ul>
     </div>

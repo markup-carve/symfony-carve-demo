@@ -1,0 +1,22 @@
+---
+title: Shipping Carve 0.2
+author: Demo team
+tags: [carve, symfony]
+---
+
+= Shipping Carve 0.2
+
+The bundle reads the frontmatter and collects every heading.
+
+== What changed
+
+Headings use `=` markers and inline spans use braces.
+
+== Upgrading
+
+Run the upgrade tool, then review each rewrite.
+
+=== Checklist
+
+- Format with `carve fmt`
+- Lint with `carve lint`
