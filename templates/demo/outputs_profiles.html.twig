@@ -25,7 +25,7 @@ $comments = new CarveRenderer(profile: 'comment');</code></pre>
     <div class="columns">
         <div class="card">
             <h2>HTML</h2>
-            <div class="rendered">{{ html|raw }}</div>
+            <div class="rendered carve">{{ html|raw }}</div>
             <pre><code>{{ html }}</code></pre>
         </div>
         <div class="card">
@@ -56,14 +56,14 @@ $comments = new CarveRenderer(profile: 'comment');</code></pre>
             {% for name, profile_html in profiles %}
                 <div class="profile-output" id="profile-{{ name }}">
                     <div class="label">{{ name }}</div>
-                    <div class="rendered">{{ profile_html|raw }}</div>
+                    <div class="rendered carve">{{ profile_html|raw }}</div>
                     <pre><code>{{ profile_html }}</code></pre>
                 </div>
             {% endfor %}
         </div>
         <h3>Comment profile from the constructor</h3>
         <p><code>new CarveRenderer(profile: 'comment')</code> gives the same result as the comment column above.</p>
-        <div class="rendered" id="comment-profile">{{ comment_html|raw }}</div>
+        <div class="rendered carve" id="comment-profile">{{ comment_html|raw }}</div>
     </div>
 
     <div class="card">

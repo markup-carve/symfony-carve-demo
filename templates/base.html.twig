@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{% block title %}symfony-carve demo{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.1em%22 font-size=%2296%22>🪶</text></svg>">
+        {# carve-css styles every construct the engine emits; the rules below only adapt it to this demo. #}
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/markup-carve/carve-css@5c3547fe489ea86c42eed08e9b27639ac81d72f5/src/carve.css">
         <style>
             * { box-sizing: border-box; }
             body {
@@ -29,6 +31,7 @@
                 padding: 5px 10px;
                 border-radius: 4px;
                 font-size: 15px;
+                white-space: nowrap;
             }
             nav a:hover { background: #3e4c59; }
             .repo-links { margin: -10px 0 20px; text-align: right; font-size: 14px; }
@@ -78,6 +81,8 @@
             .rendered table { border-collapse: collapse; width: 100%; }
             .rendered th, .rendered td { border: 1px solid #ccc; padding: 6px 12px; }
             .rendered th { background: #eef2f6; text-align: left; }
+            /* carve-css drops the last row's rule; this demo frames every cell. */
+            .rendered tbody tr:last-child :is(th, td) { border-bottom: 1px solid #ccc; }
             .rendered hr { border: 0; border-top: 1px solid #ccd3da; margin: 1.5em 0; }
             .rendered img, .rendered svg, .rendered canvas { max-width: 100%; height: auto; }
             .live-render > pre[class] { background: #fff; color: #222; border: 1px dashed #ccd3da; }
@@ -129,6 +134,12 @@
             table.facts { border-collapse: collapse; width: 100%; }
             table.facts th, table.facts td { border: 1px solid #ddd; padding: 6px 10px; text-align: left; vertical-align: top; }
             .static-preview { background: #e8f0fe; border: 1px solid #7aa2e3; padding: 12px 15px; border-radius: 6px; margin-bottom: 20px; }
+            .rendered figure { margin: 1em 0; }
+            .rendered figcaption { margin-top: 0.5em; color: #52606d; font-size: 0.9em; font-style: italic; }
+            .rendered pre code.hljs { background: transparent; padding: 0; }
+            /* Rendered code uses carve-css's light panel with the light GitHub highlight.js theme. */
+            .rendered pre { background: #f6f8fa; color: #24292e; border: 1px solid #d0d7de; }
+            .rendered.carve { --carve-radius: 6px; --carve-font-mono: 'SF Mono', Monaco, monospace; }
         </style>
     </head>
     <body>
@@ -150,6 +161,7 @@
             <a href="{{ path('form') }}">Live Editor</a>
             <a href="{{ path('safe_mode') }}">Safe Output</a>
             <a href="{{ path('syntax') }}">Syntax</a>
+            <a href="{{ path('code_lines') }}">Code Lines</a>
             <a href="{{ path('diagrams') }}">Diagrams</a>
         </nav>
         <div class="repo-links">

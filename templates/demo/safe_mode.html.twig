@@ -21,13 +21,13 @@
             <div class="label">raw_html: false (default) <span class="badge badge-safe">safe</span></div>
             <p>Raw HTML is shown as text and the <code>javascript:</code> link is blanked.</p>
             <pre id="safe-escaped"><code>{{ escaped }}</code></pre>
-            <div class="rendered">{{ escaped|raw }}</div>
+            <div class="rendered carve">{{ escaped|raw }}</div>
         </div>
         <div class="card">
             <div class="label">url_policy: {allow: [https]} <span class="badge badge-safe">safe</span></div>
             <p>Only <code>https</code> links survive; the <code>mailto:</code> link is blanked too.</p>
             <pre id="safe-https-only"><code>{{ https_only }}</code></pre>
-            <div class="rendered">{{ https_only|raw }}</div>
+            <div class="rendered carve">{{ https_only|raw }}</div>
         </div>
     </div>
 

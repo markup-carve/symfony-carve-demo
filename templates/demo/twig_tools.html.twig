@@ -32,7 +32,7 @@
                     <tr><th>meta('missing', 'n/a')</th><td>{{ doc.meta('missing', 'n/a') }}</td></tr>
                 </table>
                 <div class="label" style="margin-top:15px;">Table of contents from <code>doc.toc</code></div>
-                <div class="rendered" id="document-toc" role="navigation" aria-label="Table of contents">
+                <div class="rendered carve" id="document-toc" role="navigation" aria-label="Table of contents">
                     <ul>
                         {% for entry in doc.toc %}
                             <li style="margin-left: {{ (entry.level - 1) * 1.2 }}em"><a href="#{{ entry.id }}">{{ entry.text }}</a></li>
@@ -42,7 +42,7 @@
             </div>
         </div>
         <div class="label" style="margin-top:15px;">doc.html</div>
-        <div class="rendered">{{ doc.html|raw }}</div>
+        <div class="rendered carve">{{ doc.html|raw }}</div>
     </div>
 
     <div class="card">

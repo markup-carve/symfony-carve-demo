@@ -20,7 +20,7 @@ $text = $carve->renderFileAs($path, 'text');      // html, text, markdown or ans
             <code>@rows</code> and <code>@cols</code>.</p>
         <pre><code>{{ file_source }}</code></pre>
         <h2>Rendered result</h2>
-        <div class="rendered" id="includes-file">{{ file_html|raw }}</div>
+        <div class="rendered carve" id="includes-file">{{ file_html|raw }}</div>
         <h2>Dependencies</h2>
         <ul id="includes-dependencies">{% for dependency in file_dependencies %}<li><code>{{ dependency.path }}</code>: {{ dependency.resolved ? 'resolved' : 'missing' }}</li>{% endfor %}</ul>
         <h2><code>renderFileAs($path, 'text')</code></h2>
@@ -31,7 +31,7 @@ $text = $carve->renderFileAs($path, 'text');      // html, text, markdown or ans
         <h2>Include warnings</h2>
         <p>A missing file stays in the output as text, and the report names it. The bundle also logs each warning.</p>
         <pre><code>{{ broken_source }}</code></pre>
-        <div class="rendered">{{ broken_html|raw }}</div>
+        <div class="rendered carve">{{ broken_html|raw }}</div>
         <ul id="includes-broken-dependencies">{% for dependency in broken_dependencies %}<li><code>{{ dependency.path }}</code>: {{ dependency.resolved ? 'resolved' : 'missing' }}</li>{% endfor %}</ul>
         <ul id="includes-warnings">{% for warning in broken_warnings %}<li><code>{{ warning.rule }}</code> at {{ warning.file }}:{{ warning.line }}:{{ warning.column }}: {{ warning.message }}</li>{% endfor %}</ul>
     </div>
@@ -44,7 +44,7 @@ $text = $carve->renderFileAs($path, 'text');      // html, text, markdown or ans
         <pre><code>Carve::renderWithDiagnostics($source, ['includes' => ['resolver' => $resolver]]);</code></pre>
         <pre><code>{{ dynamic_source }}</code></pre>
         <h3>Rendered result</h3>
-        <div class="rendered" id="includes-dynamic">{{ dynamic_html|raw }}</div>
+        <div class="rendered carve" id="includes-dynamic">{{ dynamic_html|raw }}</div>
         <h3>Resolved snippets</h3>
         <ul>{% for dependency in dynamic_dependencies %}<li><code>{{ dependency.file ?? dependency.path }}</code>: {{ dependency.read ? 'resolved' : 'missing' }}</li>{% endfor %}</ul>
         {% if dynamic_warnings is not empty %}<h3>Warnings</h3><ul>{% for warning in dynamic_warnings %}<li>{{ warning }}</li>{% endfor %}</ul>{% endif %}

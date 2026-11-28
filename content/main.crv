@@ -10,7 +10,7 @@
 
 == Server entry point
 
-{{ parts/server.js @region:start @code:js }}
+{{ parts/server.js @code:js @region:start }}
 
 == Plans
 
@@ -20,4 +20,4 @@
 === Seats on the larger plans
 
 {table}
-{{ parts/plans.csv @rows:3-4 @cols:"Plan,Seats" @code:csv }}
+{{ parts/plans.csv @code:csv @rows:3-4 @cols:"Plan,Seats" }}

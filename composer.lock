@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "322a5daff4cf2264b4baf828e1a91021",
+    "content-hash": "2eca016b1a1e924e62eaae739b26f0e6",
     "packages": [
         {
             "name": "dflydev/dot-access-data",
@@ -276,12 +276,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/markup-carve/carve-php.git",
-                "reference": "6ceebc52181efc1f5dfe6f5e7964b75c43f13a90"
+                "reference": "193e3a327c8da535cd5319271ba9ccdd928d54bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/markup-carve/carve-php/zipball/6ceebc52181efc1f5dfe6f5e7964b75c43f13a90",
-                "reference": "6ceebc52181efc1f5dfe6f5e7964b75c43f13a90",
+                "url": "https://api.github.com/repos/markup-carve/carve-php/zipball/193e3a327c8da535cd5319271ba9ccdd928d54bf",
+                "reference": "193e3a327c8da535cd5319271ba9ccdd928d54bf",
                 "shasum": ""
             },
             "require": {
@@ -343,8 +343,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-11-26T22:53:17+00:00",
-            "published-time": "2026-11-26T22:53:23+00:00"
+            "time": "2026-11-28T00:19:34+00:00"
         },
         {
             "name": "markup-carve/symfony-carve",
@@ -352,12 +351,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/markup-carve/symfony-carve.git",
-                "reference": "d385c3f1bc3875614129bd99223e721f161f789d"
+                "reference": "a6deb78a071f3b6c3dd02b9463790f73c4d8efbf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/markup-carve/symfony-carve/zipball/d385c3f1bc3875614129bd99223e721f161f789d",
-                "reference": "d385c3f1bc3875614129bd99223e721f161f789d",
+                "url": "https://api.github.com/repos/markup-carve/symfony-carve/zipball/a6deb78a071f3b6c3dd02b9463790f73c4d8efbf",
+                "reference": "a6deb78a071f3b6c3dd02b9463790f73c4d8efbf",
                 "shasum": ""
             },
             "require": {
@@ -426,8 +425,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-11-26T22:36:26+00:00",
-            "published-time": "2026-11-26T22:36:31+00:00"
+            "time": "2026-11-27T01:06:15+00:00"
         },
         {
             "name": "nette/schema",
@@ -6416,5 +6414,5 @@
     "platform-overrides": {
         "php": "8.2.0"
     },
-    "plugin-api-version": "2.11.0"
+    "plugin-api-version": "2.9.0"
 }

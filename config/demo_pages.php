@@ -18,4 +18,5 @@ return [
     'safe_mode' => 'static',
     'diagrams' => 'browser-enhanced',
     'syntax' => 'static',
+    'code_lines' => 'browser-enhanced',
 ];

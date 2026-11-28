@@ -380,6 +380,17 @@ class DemoController extends AbstractController
         ]);
     }
 
+    #[Route('/code-lines', name: 'code_lines')]
+    public function codeLines(CarveRenderer $carve): Response
+    {
+        $source = $this->source('code-lines.crv');
+
+        return $this->render('demo/code_lines.html.twig', [
+            'source' => $source,
+            'html' => $carve->render($source),
+        ]);
+    }
+
     private function contentDir(): string
     {
         return $this->projectDir.'/content';

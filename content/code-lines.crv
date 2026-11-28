@@ -1,0 +1,36 @@
+= Code line options
+
+Line numbers and highlighted lines are attributes on the line above a fence. The engine passes them to `<pre>` unchanged; the highlighter reads them.
+
+{.line-numbers data-line-start=40 data-highlight=3,6-7}
+```php "src/Invoice.php"
+final class Invoice
+{
+    public function total(): Money
+    {
+        $sum = Money::zero($this->currency);
+        foreach ($this->lines as $line) {
+            $sum = $sum->add($line->amount());
+        }
+
+        return $sum;
+    }
+}
+```
+^ An excerpt that starts at line 40 of its file, with three lines marked.
+
+Highlight only, no gutter:
+
+{data-highlight=2}
+```js
+const total = lines.reduce((sum, line) => sum + line.amount, 0);
+console.log(total);
+```
+
+Line numbers only, counted from 1:
+
+{.line-numbers}
+```sh
+composer require markup-carve/carve-php
+vendor/bin/carve render README.crv
+```

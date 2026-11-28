@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Code line options &middot; symfony-carve{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <h2>Code line options</h2>
+        <p class="lead">
+            Three attributes on the line above a fence: <code>.line-numbers</code>, <code>data-line-start</code> and
+            <code>data-highlight</code>. symfony-carve passes them to <code>&lt;pre&gt;</code> unchanged. This page
+            highlights with highlight.js in the browser, then a small script splits the lines, writes the gutter and
+            marks the selected lines.
+        </p>
+        <p>
+            <code>data-highlight</code> takes 1-based numbers and <code>a-b</code> ranges, counted from the first line
+            of the block, not from <code>data-line-start</code>. A caption keeps the options on <code>&lt;pre&gt;</code>.
+        </p>
+    </div>
+
+    <div class="card">
+        <div class="label">Rendered</div>
+        <div class="rendered carve" id="code-lines-output">{{ html|raw }}</div>
+    </div>
+
+    <div class="columns">
+        <div class="card">
+            <div class="label">Carve source</div>
+            <pre><code>{{ source }}</code></pre>
+        </div>
+        <div class="card">
+            <div class="label">HTML from the engine</div>
+            <pre><code>{{ html }}</code></pre>
+        </div>
+    </div>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/github.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script type="module">
+        {% include 'demo/carve-code-blocks.js' %}
+        enhanceCodeBlocks(document.getElementById('code-lines-output'), (el) => window.hljs.highlightElement(el));
+    </script>
+{% endblock %}

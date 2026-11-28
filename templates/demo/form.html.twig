@@ -43,10 +43,10 @@ private ?string $comment;</code></pre>
     {% if preview %}
         <div class="card">
             <h2>Preview: {{ preview.title }}</h2>
-            <div class="rendered">{{ preview.body_html|raw }}</div>
+            <div class="rendered carve">{{ preview.body_html|raw }}</div>
             {% if preview.comment_html %}
                 <h3>Comment</h3>
-                <div class="rendered">{{ preview.comment_html|raw }}</div>
+                <div class="rendered carve">{{ preview.comment_html|raw }}</div>
             {% endif %}
         </div>
     {% endif %}

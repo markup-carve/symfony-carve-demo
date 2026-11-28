@@ -290,6 +290,15 @@ final class DemoPagesTest extends WebTestCase
         self::assertStringContainsString("theme: 'neutral'", $html);
     }
 
+    public function testCodeLinesPassLineOptionsToPre(): void
+    {
+        $html = $this->page('code_lines');
+
+        self::assertStringContainsString('<pre title="src/Invoice.php" class="line-numbers" data-line-start="40" data-highlight="3,6-7">', $html);
+        self::assertStringContainsString('<pre data-highlight="2"><code class="language-js">', $html);
+        self::assertStringContainsString('enhanceCodeBlocks(', $html);
+    }
+
     private function page(string $route): string
     {
         $client = static::createClient();

@@ -56,7 +56,7 @@
                 </div>
             </div>
             <div class="label" style="margin-top:15px;">Live render</div>
-            <div class="rendered live-render">{{ example.html|raw }}</div>
+            <div class="rendered carve live-render">{{ example.html|raw }}</div>
         </div>
     {% endfor %}
 
@@ -129,7 +129,11 @@
                     document.querySelectorAll(scope + '.vega_lite').forEach(function (pre) {
                         try {
                             var spec = JSON.parse(pre.textContent);
+                            // Without a width Vega-Lite sizes the chart to its narrowest band.
+                            if (spec.width === undefined) { spec.width = 'container'; }
                             var target = document.createElement('div');
+                            target.style.width = '100%';
+                            target.style.maxWidth = '480px';
                             pre.parentNode.insertBefore(target, pre);
                             window.vegaEmbed(target, spec, { actions: false }).then(function () {
                                 pre.remove();
@@ -181,7 +185,7 @@
                             var src = pre.textContent;
                             var target = document.createElement('div');
                             pre.replaceWith(target);
-                            ABCJS.renderAbc(target, src);
+                            ABCJS.renderAbc(target, src, { responsive: 'resize' });
                         } catch (e) { console.error('abc render', e); }
                     });
                 }
@@ -220,7 +224,7 @@
                                 .replace(/\+/g, '-').replace(/\//g, '_');
                             var img = document.createElement('img');
                             img.alt = 'D2 diagram';
-                            img.style.maxWidth = '100%';
+                            img.style.maxWidth = 'min(100%, 420px)';
                             img.style.background = '#fff';
                             img.onload = function () { pre.style.display = 'none'; };
                             img.onerror = function () { img.remove(); };

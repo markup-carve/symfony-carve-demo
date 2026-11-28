@@ -21,13 +21,13 @@
     <div class="columns">
         <div class="card">
             <div class="label">With tabs and wikilinks (the configured service)</div>
-            <div class="rendered" id="extensions-on">{{ html|raw }}</div>
+            <div class="rendered carve" id="extensions-on">{{ html|raw }}</div>
             <pre><code>{{ html }}</code></pre>
         </div>
         <div class="card">
             <div class="label">No extensions registered</div>
             <p>Unregistered divs and inline extensions keep their fallback rendering.</p>
-            <div class="rendered" id="extensions-off">{{ plain_html|raw }}</div>
+            <div class="rendered carve" id="extensions-off">{{ plain_html|raw }}</div>
             <pre><code>{{ plain_html }}</code></pre>
         </div>
     </div>
@@ -35,7 +35,7 @@
     <div class="card">
         <div class="label">mode: static</div>
         <p>In static mode the tabs render as sections with headings, and inline extensions fall back to plain text, for pages without interactive markup.</p>
-        <div class="rendered" id="extensions-static">{{ static_html|raw }}</div>
+        <div class="rendered carve" id="extensions-static">{{ static_html|raw }}</div>
     </div>
 
     <div class="card">
@@ -45,7 +45,7 @@
             and <code>copyToClipboard</code>), and <code>autolink</code> turns bare <code>https</code>, <code>http</code> and
             <code>mailto</code> addresses into links. This card uses a separate renderer so the other pages keep plain headings.</p>
         <pre><code>new CarveRenderer(extensions: [['type' => 'heading_permalinks', 'symbol' => '#'], 'autolink']);</code></pre>
-        <div class="rendered" id="extensions-permalinks-rendered">{{ permalinks_html|raw }}</div>
+        <div class="rendered carve" id="extensions-permalinks-rendered">{{ permalinks_html|raw }}</div>
         <pre id="extensions-permalinks"><code>{{ permalinks_html }}</code></pre>
     </div>
 {% endblock %}

@@ -21,13 +21,13 @@
         </div>
         <div class="card">
             <div class="label">{{ '{{ source|carve }}' }}</div>
-            <div class="rendered" id="filter-default">{{ source|carve }}</div>
+            <div class="rendered carve" id="filter-default">{{ source|carve }}</div>
         </div>
     </div>
 
     <div class="card">
         <div class="label">{{ "{{ source|carve({profile: 'comment', sections: false}) }}" }}</div>
         <p>The comment profile keeps headings as text, so user comments cannot add document structure.</p>
-        <div class="rendered" id="filter-options">{{ source|carve({profile: 'comment', sections: false}) }}</div>
+        <div class="rendered carve" id="filter-options">{{ source|carve({profile: 'comment', sections: false}) }}</div>
     </div>
 {% endblock %}
